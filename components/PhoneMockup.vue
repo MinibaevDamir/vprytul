@@ -1,62 +1,201 @@
+<script setup lang="ts">
+// Мокап смартфона з «Домашньою сторінкою» застосунку (Figma, фрейм 144:7210).
+// Ассети експортовані з макета в public/phone/. Стрічка екрана довша за вьюпорт
+// телефона і скрабиться 1:1 зі скролом сторінки. Якщо є предок [data-phone-pin]
+// (hero тримає його sticky на висоту стрічки), спершу «прогортається» телефон,
+// і лише потім їде сторінка; довжину прокрутки віддаємо нагору подією range.
+// Секції стрічки плавно проявляються, коли в'їжджають у вьюпорт телефона.
+const emit = defineEmits<{ (e: 'range', px: number): void }>()
+
+const viewportEl = ref<HTMLElement | null>(null)
+const feedEl = ref<HTMLElement | null>(null)
+const shift = ref(0)
+
+let pinEl: HTMLElement | null = null
+let maxShift = 0
+let raf = 0
+let ro: ResizeObserver | null = null
+
+const apply = () => {
+  if (!viewportEl.value || !feedEl.value) return
+  const scrolled = pinEl ? -pinEl.getBoundingClientRect().top : window.scrollY
+  shift.value = -Math.round(Math.min(maxShift, Math.max(0, scrolled)))
+  const limit = -shift.value + viewportEl.value.clientHeight * 0.92
+  feedEl.value.querySelectorAll<HTMLElement>('.scr-section').forEach((s) => {
+    if (s.offsetTop < limit) s.classList.add('is-in')
+  })
+}
+
+const onScroll = () => {
+  cancelAnimationFrame(raf)
+  raf = requestAnimationFrame(apply)
+}
+
+const measure = () => {
+  if (!viewportEl.value || !feedEl.value) return
+  maxShift = Math.max(0, feedEl.value.scrollHeight - viewportEl.value.clientHeight)
+  emit('range', maxShift)
+  apply()
+}
+
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  pinEl = viewportEl.value?.closest<HTMLElement>('[data-phone-pin]') ?? null
+  feedEl.value?.classList.add('scr-feed--anim')
+  // кадр паузи, щоб приховані секції встигли відмалюватися і поява йшла з переходом
+  requestAnimationFrame(measure)
+  ro = new ResizeObserver(measure)
+  if (feedEl.value) ro.observe(feedEl.value)
+  if (viewportEl.value) ro.observe(viewportEl.value)
+  window.addEventListener('resize', measure, { passive: true })
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(raf)
+  ro?.disconnect()
+  window.removeEventListener('resize', measure)
+  window.removeEventListener('scroll', onScroll)
+})
+
+const products = [
+  { img: '/phone/product-tee.jpg', name: 'Футболка Впритул', price: 500 },
+  { img: '/phone/product-tote.jpg', name: 'Шопер Впритул', price: 380 },
+  { img: '/phone/product-patch.jpg', name: 'Патч Впритул', price: 15 },
+  { img: '/phone/product-tote2.jpg', name: 'Шопер Впритул', price: 50 },
+  { img: '/phone/product-patch.jpg', name: 'Патч Впритул', price: 15 }
+]
+</script>
+
 <template>
-  <!-- Мокап смартфона з головним екраном застосунку (за Figma: Vprytul App Preview / Home) -->
-  <div class="phone" role="img" aria-label="Головний екран застосунку Впритул: гарячий квест «Зроби донат — збий шахед» і топ-пропозиції">
+  <div
+    class="phone"
+    role="img"
+    aria-label="Домашня сторінка застосунку Впритул: гарячий квест «Зроби донат — збий шахед», голосування, топ-пропозиції та новини"
+  >
     <div class="phone__screen" aria-hidden="true">
       <div class="scr-status">
-        <span class="scr-status__time">9:41</span>
-        <span class="scr-status__icons">
-          <svg viewBox="0 0 46 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1" /><rect x="5" y="2" width="3" height="10" rx="1" /><rect x="10" y="0" width="3" height="12" rx="1" /><path d="M20 4a8 8 0 0 1 10 0l-1.5 2a5.5 5.5 0 0 0-7 0L20 4Zm3 4a4 4 0 0 1 4 0l-2 2.5L23 8Z" /><rect x="34" y="1" width="10" height="10" rx="2.5" opacity="0.4" /><rect x="35.5" y="2.5" width="6" height="7" rx="1.2" /></svg>
-        </span>
+        <img class="scr-status__time" src="/phone/status-time.svg" alt="" />
+        <img class="scr-status__right" src="/phone/status-right.svg" alt="" />
       </div>
 
       <div class="scr-header">
-        <BrandLogo tone="dark" class="scr-header__logo" />
-        <span class="scr-pill">
-          <svg class="scr-ico scr-ico--flame" viewBox="0 0 16 16"><path d="M8 1c.5 2.4-1.8 3.6-1.8 6a1.9 1.9 0 0 0 3.8.2C10 5.8 9 5 9.4 3.4 11.6 4.6 13 7 13 9.2A5.1 5.1 0 0 1 3 9.4C3 5.8 6.9 4.4 8 1Z" fill="#F29837" /></svg>
-          105
+        <BrandLogo class="scr-header__logo" />
+        <span class="scr-points">
+          <span class="scr-points__part">
+            <img src="/phone/ic-points.svg" alt="" />
+            105
+          </span>
+          <span class="scr-points__div" />
+          <span class="scr-points__part">
+            <img src="/phone/ic-coins.svg" alt="" />
+            105
+          </span>
         </span>
-        <span class="scr-pill">
-          <svg class="scr-ico" viewBox="0 0 88 40" fill="none"><path d="M4 4l16 16L4 36M24 4l16 16-16 16M84 4L68 20l16 16M64 4L48 20l16 16" stroke="#1D1D1B" stroke-width="10" /></svg>
-          105
-        </span>
-        <svg class="scr-bell" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 0 0-5 5v3l-1.6 3.2c-.3.6.1 1.3.8 1.3h11.6c.7 0 1.1-.7.8-1.3L15 10V7a5 5 0 0 0-5-5Zm-2 14a2 2 0 0 0 4 0" stroke="#1D1D1B" stroke-width="1.6" /></svg>
-      </div>
-
-      <div class="scr-quest-title">
-        <svg class="scr-ico scr-ico--flame" viewBox="0 0 16 16"><path d="M8 1c.5 2.4-1.8 3.6-1.8 6a1.9 1.9 0 0 0 3.8.2C10 5.8 9 5 9.4 3.4 11.6 4.6 13 7 13 9.2A5.1 5.1 0 0 1 3 9.4C3 5.8 6.9 4.4 8 1Z" fill="#F29837" /></svg>
-        Гарячий квест
-      </div>
-
-      <div class="scr-card">
-        <span class="scr-card__tag">Квест-донат</span>
-        <span class="scr-card__headline">Зроби донат<br />збий шахед</span>
-        <span class="scr-card__rewards">
-          Rewards
-          <span class="scr-chip">+1</span>
-          <span class="scr-chip">+1</span>
+        <span class="scr-header__actions">
+          <img src="/phone/ic-chat.svg" alt="" />
+          <img src="/phone/ic-bell.svg" alt="" />
         </span>
       </div>
 
-      <p class="scr-caption">Зроби донат — збий шахед!</p>
+      <div ref="viewportEl" class="scr-viewport">
+        <div ref="feedEl" class="scr-feed" :style="{ transform: `translateY(${shift}px)` }">
+          <section class="scr-section">
+            <div class="scr-subtitle">
+              <img class="scr-subtitle__ico" src="/phone/ic-fire.svg" alt="" />
+              <span class="scr-subtitle__text">Гарячий квест</span>
+            </div>
+            <div class="scr-quest">
+              <span class="scr-quest__badge"><img src="/phone/ic-fire-white.svg" alt="" /></span>
+              <img class="scr-quest__banner" src="/phone/quest-banner.jpg" alt="" />
+              <span class="scr-quest__title">Зроби донат - збий шахед!</span>
+              <span class="scr-quest__rewards">Rewards</span>
+              <span class="scr-quest__chips">
+                <span class="scr-chip scr-chip--points"><img src="/phone/ic-points-sm.svg" alt="" />+1</span>
+                <span class="scr-chip scr-chip--coins"><img src="/phone/ic-coins-sm.svg" alt="" />+1</span>
+              </span>
+            </div>
+          </section>
 
-      <div class="scr-shop-title">Топ-пропозиції</div>
-      <div class="scr-shop">
-        <div class="scr-merch">
-          <svg viewBox="0 0 88 40" fill="none" class="scr-merch__print"><path d="M4 4l16 16L4 36M24 4l16 16-16 16M84 4L68 20l16 16M64 4L48 20l16 16" stroke="#F29837" stroke-width="9" /></svg>
-          <span>Футболка<br />«Впритул»</span>
+          <section class="scr-section">
+            <div class="scr-subtitle">
+              <span class="scr-subtitle__text">Голосування</span>
+              <span class="scr-more">Переглянути всі<img src="/phone/ic-chevron.svg" alt="" /></span>
+            </div>
+            <div class="scr-vote">
+              <span class="scr-vote__ico"><img src="/phone/ic-voting.svg" alt="" /></span>
+              <span class="scr-vote__text">Обери назву майбутнього збору!</span>
+              <img class="scr-vote__chev" src="/phone/ic-chevron.svg" alt="" />
+            </div>
+          </section>
+
+          <section class="scr-section">
+            <div class="scr-subtitle">
+              <img class="scr-subtitle__ico" src="/phone/ic-fire.svg" alt="" />
+              <span class="scr-subtitle__text">Топ-пропозиції</span>
+              <span class="scr-more">Переглянути всі<img src="/phone/ic-chevron.svg" alt="" /></span>
+            </div>
+            <div class="scr-products">
+              <div v-for="(p, i) in products" :key="i" class="scr-product">
+                <img class="scr-product__img" :src="p.img" alt="" />
+                <span class="scr-product__name">{{ p.name }}</span>
+                <span class="scr-product__price">
+                  {{ p.price }}
+                  <img src="/phone/ic-coins-24.svg" alt="" />
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section class="scr-section scr-section--tight">
+            <div class="scr-subtitle">
+              <span class="scr-subtitle__text">Новини</span>
+              <span class="scr-more">Переглянути всі<img src="/phone/ic-chevron.svg" alt="" /></span>
+            </div>
+            <div class="scr-news">
+              <img class="scr-news__img" src="/phone/news-cover.jpg" alt="" />
+              <span class="scr-news__title">73 мільйони гривень за два дні — done!🔥</span>
+              <span class="scr-news__date">19 Січня 2025</span>
+            </div>
+          </section>
+
+          <section class="scr-section scr-section--tight">
+            <div class="scr-subtitle">
+              <span class="scr-subtitle__text">Кампанії</span>
+              <span class="scr-more">Переглянути всі<img src="/phone/ic-chevron.svg" alt="" /></span>
+            </div>
+            <div class="scr-campaign">
+              <img class="scr-campaign__img" src="/phone/campaign-cover.jpg" alt="" />
+              <span class="scr-campaign__title">Єдинозбір</span>
+            </div>
+          </section>
         </div>
-        <div class="scr-merch">
-          <span class="scr-merch__word">ТИМ<br />ЧАСОМ</span>
-          <span>Колекція<br />весна-літо</span>
-        </div>
       </div>
 
-      <div class="scr-nav">
-        <svg class="is-active" viewBox="0 0 20 20" fill="none"><path d="M3 9.5 10 3l7 6.5V17a1 1 0 0 1-1 1h-4v-5H8v5H4a1 1 0 0 1-1-1V9.5Z" stroke="#F29837" stroke-width="1.7" /></svg>
-        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L2.2 7.7l5.4-.8L10 2Z" stroke="#8A8983" stroke-width="1.5" /></svg>
-        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#8A8983" stroke-width="1.5" /><path d="M10 6v8M6 10h8" stroke="#8A8983" stroke-width="1.5" /></svg>
-        <svg viewBox="0 0 20 20" fill="none"><path d="M4 17V9m6 8V3m6 14v-6" stroke="#8A8983" stroke-width="1.7" /></svg>
-        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.4" stroke="#8A8983" stroke-width="1.5" /><path d="M3.5 17a6.5 6.5 0 0 1 13 0" stroke="#8A8983" stroke-width="1.5" /></svg>
+      <div class="scr-tabbar">
+        <div class="scr-tabbar__tabs">
+          <span class="scr-tab is-active">
+            <span class="scr-tab__ico"><img class="scr-tab__ic-home" src="/phone/ic-tab-home.svg" alt="" /></span>
+            Головна
+          </span>
+          <span class="scr-tab">
+            <span class="scr-tab__ico"><img class="scr-tab__ic-quests" src="/phone/ic-tab-quests.svg" alt="" /></span>
+            Квести
+          </span>
+          <span class="scr-tab scr-tab--donate">
+            <span class="scr-tab__ico"><img class="scr-tab__ic-donate" src="/phone/ic-tab-donate.svg" alt="" /></span>
+            Донат
+          </span>
+          <span class="scr-tab">
+            <span class="scr-tab__ico"><img class="scr-tab__ic-ratings" src="/phone/ic-tab-ratings.svg" alt="" /></span>
+            Рейтинги
+          </span>
+          <span class="scr-tab">
+            <span class="scr-tab__ico"><img class="scr-tab__ic-profile" src="/phone/ic-tab-profile.svg" alt="" /></span>
+            Профіль
+          </span>
+        </div>
+        <div class="scr-tabbar__home" />
       </div>
     </div>
   </div>
@@ -64,6 +203,14 @@
 
 <style scoped>
 .phone {
+  /* Палітра design-системи застосунку (не лендінгу) — з макета */
+  --scr-orange: #ff9200;
+  --scr-bg: #f2f2f1;
+  --scr-line: #e3e4de;
+  --scr-line-strong: #d2d3cd;
+  --scr-muted: #525252;
+  --scr-black: #181917;
+
   width: min(320px, 78vw);
   aspect-ratio: 320 / 660;
   padding: 12px;
@@ -79,198 +226,466 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #fdfdfc;
+  background: #ffffff;
   border-radius: 38px;
-  padding: 14px 16px 10px;
-  color: var(--ink);
+  color: #000;
+  /* Екран відтворює UI застосунку — системний шрифт iOS (SF Pro у макеті) */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
 }
 
 .scr-status {
+  flex: none;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 13px;
+  justify-content: space-between;
+  height: 35px;
+  padding: 6px 12px 0 26px;
 }
 
-.scr-status__icons svg {
-  width: 46px;
-  height: 12px;
+.scr-status__time {
+  width: 23px;
+  height: 9px;
+}
+
+.scr-status__right {
+  width: 53px;
+  height: 9px;
 }
 
 .scr-header {
+  flex: none;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  margin-top: 14px;
+  height: 45px;
+  padding: 0 13px;
+  border-bottom: 1px solid var(--scr-line);
 }
 
 .scr-header__logo {
-  font-size: 15px;
-  margin-right: auto;
+  width: 44px;
+  height: auto;
+  flex: none;
 }
 
-.scr-pill {
+.scr-header__logo :deep(path) {
+  fill: var(--scr-black);
+}
+
+.scr-points {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 9px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 12px;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid var(--scr-line-strong);
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-.scr-ico {
-  width: 14px;
-  height: 12px;
-}
-
-.scr-ico--flame {
-  width: 12px;
-  height: 12px;
-}
-
-.scr-bell {
-  width: 19px;
-  height: 19px;
-}
-
-.scr-quest-title {
-  display: flex;
+.scr-points__part {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 18px;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 14.5px;
+  gap: 2px;
 }
 
-.scr-quest-title .scr-ico--flame {
-  width: 15px;
-  height: 15px;
+.scr-points__part img {
+  width: 14px;
+  height: 14px;
 }
 
-.scr-card {
+.scr-points__div {
+  width: 1px;
+  align-self: stretch;
+  background: var(--scr-line-strong);
+}
+
+.scr-header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.scr-header__actions img {
+  width: 16px;
+  height: 17px;
+  object-fit: contain;
+}
+
+/* Стрічка, що підкручується зі скролом сторінки */
+.scr-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--scr-bg);
+}
+
+.scr-feed {
   position: relative;
-  margin-top: 10px;
-  padding: 30px 16px 12px;
-  border-radius: 18px;
-  background:
-    radial-gradient(120% 140% at 15% 0%, rgba(255, 255, 255, 0.25), transparent 45%),
-    linear-gradient(135deg, var(--orange) 0%, #e06a2b 55%, var(--ember) 100%);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 19px;
+  padding: 13px;
+  will-change: transform;
 }
 
-.scr-card__tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 3px 10px;
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 10px;
+.scr-feed--anim .scr-section {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.scr-card__headline {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 24px;
-  line-height: 1.02;
-  text-transform: uppercase;
-  color: var(--ink);
+.scr-feed--anim .scr-section.is-in {
+  opacity: 1;
+  transform: none;
 }
 
-.scr-card__rewards {
+.scr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.scr-section--tight {
+  gap: 6px;
+}
+
+.scr-subtitle {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-body);
+}
+
+.scr-subtitle__ico {
+  width: 12px;
+  height: 17px;
+}
+
+.scr-subtitle__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.scr-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--scr-muted);
+  white-space: nowrap;
+}
+
+.scr-more img {
+  width: 6px;
+  height: 10px;
+  margin-left: 6px;
+}
+
+.scr-quest {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px;
+  background: #fff;
+  border: 2.5px solid var(--scr-orange);
+}
+
+.scr-quest__badge {
+  position: absolute;
+  top: -14px;
+  right: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  background: var(--scr-orange);
+  border-radius: 999px;
+}
+
+.scr-quest__badge img {
+  width: 12px;
+  height: 17px;
+}
+
+.scr-quest__banner {
+  width: 100%;
+  height: 106px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.scr-quest__title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.scr-quest__rewards {
+  padding-bottom: 2px;
   font-size: 11px;
-  color: rgba(29, 29, 27, 0.8);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--scr-black);
+}
+
+.scr-quest__chips {
+  display: flex;
+  gap: 6px;
 }
 
 .scr-chip {
-  padding: 2px 8px;
-  background: rgba(29, 29, 27, 0.85);
-  color: var(--orange);
-  border-radius: 999px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 10.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 19px;
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.scr-caption {
-  margin: 12px 0 0;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 15px;
+.scr-chip img {
+  width: 13px;
+  height: 13px;
+}
+
+.scr-chip--points {
+  background: #fff2e1;
+}
+
+.scr-chip--coins {
+  background: var(--scr-line);
+}
+
+.scr-vote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  background: #fff;
+}
+
+.scr-vote__ico {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--scr-line-strong);
+}
+
+.scr-vote__ico img {
+  width: 17px;
+  height: 14px;
+}
+
+.scr-vote__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.3;
 }
 
-.scr-shop-title {
-  margin-top: 16px;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 14.5px;
+.scr-vote__chev {
+  width: 6px;
+  height: 10px;
 }
 
-.scr-shop {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-  flex: 1;
-  min-height: 0;
-}
-
-.scr-merch {
+.scr-products {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 12px;
-  background: var(--ink);
-  border-radius: 14px;
-  color: var(--bone);
-  font-family: var(--font-body);
-  font-size: 10.5px;
-  line-height: 1.35;
+  gap: 6px;
+  margin-right: -13px;
   overflow: hidden;
 }
 
-.scr-merch__print {
-  width: 56px;
-  height: 26px;
-}
-
-.scr-merch__word {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 17px;
-  line-height: 1;
-  color: var(--orange);
-  text-transform: uppercase;
-}
-
-.scr-nav {
+.scr-product {
+  flex: none;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px 2px;
-  border-top: 1px solid var(--line);
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 6px;
+  width: 122px;
+  padding: 13px;
+  background: #fff;
+  border: 1px solid var(--scr-line-strong);
 }
 
-.scr-nav svg {
-  width: 21px;
-  height: 21px;
+.scr-product__img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+
+.scr-product__name {
+  height: 28px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--scr-black);
+}
+
+.scr-product__price {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--scr-black);
+}
+
+.scr-product__price img {
+  width: 17px;
+  height: 17px;
+}
+
+.scr-news {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: #fff;
+}
+
+.scr-news__img {
+  width: 100%;
+  height: 138px;
+  object-fit: cover;
+}
+
+.scr-news__title {
+  padding-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.scr-news__date {
+  padding-top: 6px;
+  font-size: 10px;
+  line-height: 13px;
+  color: #1a1a1a;
+}
+
+.scr-campaign {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 6px 13px;
+  background: #fff;
+}
+
+.scr-campaign__img {
+  width: 100%;
+  height: 137px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.scr-campaign__title {
+  padding-top: 13px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1d2127;
+}
+
+.scr-tabbar {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-top: 1px solid var(--scr-line);
+}
+
+.scr-tabbar__tabs {
+  display: flex;
+  align-items: center;
+}
+
+.scr-tab {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 33px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #000;
+}
+
+.scr-tab__ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.scr-tab__ic-home {
+  width: 17px;
+  height: 17px;
+}
+
+.scr-tab__ic-quests {
+  width: 20px;
+  height: 19px;
+}
+
+.scr-tab__ic-donate {
+  width: 17px;
+  height: 16px;
+}
+
+.scr-tab__ic-ratings {
+  width: 20px;
+  height: 17px;
+}
+
+.scr-tab__ic-profile {
+  width: 15px;
+  height: 19px;
+}
+
+.scr-tab.is-active {
+  color: var(--scr-orange);
+}
+
+.scr-tab--donate {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+}
+
+.scr-tabbar__home {
+  position: relative;
+  height: 22px;
+}
+
+.scr-tabbar__home::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 114px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #000;
 }
 </style>

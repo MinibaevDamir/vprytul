@@ -30,10 +30,6 @@ export default defineNuxtConfig({
   // Пререндер оголошуємо через routeRules — так сторінки потрапляють у .vercel/output
   // як статичні асети з коректним кешуванням, див. https://vercel.com/docs/frameworks/full-stack/nuxt
   routeRules: {
-    '/': { prerender: true },
-    '/privacy-policy': { prerender: true },
-    '/terms-of-use': { prerender: true },
-    '/data-protection': { prerender: true },
-    '/license': { prerender: true }
+    '/': { prerender: true }
   }
 })

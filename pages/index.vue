@@ -1,72 +1,97 @@
 <script setup lang="ts">
-const { guideUrl, siteUrl } = useRuntimeConfig().public
-const { trackGuideOpen } = useAnalytics()
+const { guideUrl, siteUrl } = useRuntimeConfig().public;
+const { trackGuideOpen } = useAnalytics();
 
-const title = 'Впритул — застосунок Благодійного фонду Сергія Притули'
+const title = "Впритул — застосунок Благодійного фонду Сергія Притули";
 const description =
-  'Впритул: зменшуй дистанцію до дії та людей. Застосунок Фонду Притули — гейміфікація благодійності: щоденні квести, донати за підпискою, голосування та закрита спільнота. Завантажуй в App Store і Google Play.'
+  "Впритул: зменшуй дистанцію до дії та людей. Застосунок Фонду Притули — гейміфікація благодійності: щоденні квести, донати за підпискою, голосування та закрита спільнота. Завантажуй в App Store і Google Play.";
 
 useSeoMeta({
   title,
   description,
   keywords:
-    'впритул застосунок, додаток фонду притули, гейміфікація благодійності, квести, донати, благодійний фонд сергія притули',
+    "впритул застосунок, додаток фонду притули, гейміфікація благодійності, квести, донати, благодійний фонд сергія притули",
   ogTitle: title,
   ogDescription: description,
-  ogType: 'website',
+  ogType: "website",
   ogUrl: siteUrl,
   ogImage: `${siteUrl}/og.png`,
-  ogLocale: 'uk_UA',
-  twitterCard: 'summary_large_image',
+  ogLocale: "uk_UA",
+  twitterCard: "summary_large_image",
   twitterTitle: title,
   twitterDescription: description,
-  twitterImage: `${siteUrl}/og.png`
-})
+  twitterImage: `${siteUrl}/og.png`,
+});
 
 useHead({
-  link: [{ rel: 'canonical', href: siteUrl }],
+  link: [{ rel: "canonical", href: siteUrl }],
   script: [
     {
-      type: 'application/ld+json',
+      type: "application/ld+json",
       innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'MobileApplication',
-        name: 'Впритул',
-        operatingSystem: 'iOS, Android',
-        applicationCategory: 'LifestyleApplication',
+        "@context": "https://schema.org",
+        "@type": "MobileApplication",
+        name: "Впритул",
+        operatingSystem: "iOS, Android",
+        applicationCategory: "LifestyleApplication",
         description,
         author: {
-          '@type': 'NGO',
-          name: 'Благодійний фонд Сергія Притули',
-          url: 'https://prytulafoundation.org'
-        }
-      })
-    }
-  ]
-})
+          "@type": "NGO",
+          name: "Благодійний фонд Сергія Притули",
+          url: "https://prytulafoundation.org",
+        },
+      }),
+    },
+  ],
+});
+
+// Довжина прокрутки стрічки телефона (від PhoneMockup) — на неї hero
+// подовжується вниз, поки sticky-блок стоїть і «гортається» екран телефона
+const phoneScroll = ref(0);
 
 const features = [
   {
-    id: 'quests',
-    title: 'Квести та місії',
-    text: 'Щоденні завдання, інформаційні та вірусні квести. Мікро-дії, які конвертуються в реальну допомогу.'
+    id: "quests",
+    title: "Квести та місії",
+    text: "Виконуй щоденні завдання, долучайся до інформаційних та вірусних квестів. Кожна твоя активність — це не просто галочка у списку, це реальна допомога фонду та твій особистий внесок у спільну справу, який одразу винагороджується.",
   },
   {
-    id: 'donations',
-    title: 'Система донатів',
-    text: 'Підписка на регулярні донати — так само легко, як створити банку. Бали участі нараховуються автоматично.'
+    id: "donations",
+    title: "Система донатів та винагороди",
+    text: "Підтримувати збори стало так само просто, як і налаштувати звичну щомісячну платіжну підписку. Жодної зайвої бюрократії. За кожен донат і кожну виконану дію тобі автоматично нараховуються бали рейтингу та коїни. Збирай їх і обмінюй у нашому магазині на цікавинки від партнерів, мерч та приємні бонуси.",
   },
   {
-    id: 'voting',
-    title: 'Голосування та рейтинг',
-    text: 'Бали за активність підсилюють вагу твого голосу в рішеннях Фонду. Допомагаєш більше — впливаєш більше.'
+    id: "voting",
+    title: "Голосування та вплив",
+    text: "Зароблені за активність бали рейтингу дають тобі можливість впливати на внутрішні процеси. Ми залучаємо спільноту до прийняття рішень у межах визначених Фондом векторів. Це унікальний шанс долучитися до обговорення ініціатив проєкту, відчуваючи свій реальний вплив на спільноту.",
   },
   {
-    id: 'community',
-    title: 'Спільнота',
-    text: 'Закриті чати однодумців, прямий зв’язок із командою Фонду та детальні звіти про кожну зібрану гривню.'
-  }
-]
+    id: "community",
+    title: "Спільнота",
+    text: "Отримуй доступ до затишних регіональних чатів та великої загальної спільноти єдинодумців у всіх куточках країни (і світу!). Але головне — прямий і живий зв’язок із командою Фонду, амбасадорами, лідерами думок, військовими та діячами культури. Будь ближче до тих, хто творить історію щодня.",
+  },
+  {
+    id: "learning",
+    title: "Навчання, квізи та новини",
+    text: "Бути свідомим громадянином цікаво, коли інформація подається без душноти. На тебе чекає величезний спектр контенту: від закулісся роботи Фонду Сергія Притули до ексклюзивних статей, розборів та відео від наших експертів і запрошених гостей. Проходь квізи, підвищуй свою обізнаність у безпеці, волонтерстві та суспільних ініціативах легко та захопливо.",
+  },
+];
+
+// PDF-документи з public/ — імена файлів містять кирилицю і пробіли, тому кодуємо
+const legalDocs = [
+  {
+    label: "Політика конфіденційності",
+    file: "Політика конфіденційності застосунку «Впритул» (VPRYTUL).pdf",
+  },
+  {
+    label: "Умови використання",
+    file: "Умови використання мобільного застосунку «Впритул» (VPRYTUL).pdf",
+  },
+  {
+    label: "Політика захисту даних",
+    file: "Політика захисту даних мобільного застосунку «Впритул» (VPRYTUL).pdf",
+  },
+].map((d) => ({ label: d.label, href: `/${encodeURI(d.file)}` }));
 </script>
 
 <template>
@@ -75,81 +100,175 @@ const features = [
     <header class="topbar">
       <div class="container topbar__inner">
         <BrandLogo tone="light" class="topbar__logo" />
-        <a class="topbar__link" href="https://prytulafoundation.org" rel="noopener">
+        <a
+          class="topbar__link"
+          href="https://prytulafoundation.org"
+          rel="noopener"
+        >
           Проєкт Благодійного фонду Сергія Притули
         </a>
       </div>
     </header>
 
     <!-- БЛОК 1: ГОЛОВНИЙ ЕКРАН -->
-    <section class="hero">
-      <div class="container hero__inner">
-        <div class="hero__copy">
-          <p class="hero__eyebrow">
-            <span class="hero__chev hero__chev--in"><ChevronMark /></span>
-            Застосунок, що грає за перемогу
-          </p>
-          <h1 class="hero__title">
-            Впритул<span class="hero__title-colon">:</span><br />
-            зменшуй дистанцію<br />
-            <span class="hero__title-accent">до дії та людей</span>
-          </h1>
-          <p class="hero__sub">
-            Твій персональний простір гейміфікованої допомоги, закрита спільнота однодумців та
-            єдине вікно для системної підтримки Фонду.
-          </p>
-          <StoreButtons tone="light" class="hero__stores" />
-          <p class="hero__note">Безплатно. Для iOS та Android.</p>
-        </div>
+    <section
+      class="hero"
+      data-phone-pin
+      :style="{ '--phone-scroll': `${phoneScroll}px` }"
+    >
+      <div class="hero__sticky">
+        <div class="container hero__inner">
+          <div class="hero__copy">
+            <p class="hero__eyebrow">
+              <span class="hero__chev hero__chev--in"><ChevronMark /></span>
+              <span
+                >Застосунок, де твоя активність конвертується в&nbsp;системну
+                допомогу та&nbsp;приносить винагороди</span
+              >
+            </p>
+            <h1 class="hero__title">
+              Впритул<span class="hero__title-colon">:</span><br />
+              зменшуй дистанцію<br />
+              <span class="hero__title-accent">до дії та людей</span>
+            </h1>
+            <p class="hero__sub">
+              Твій персональний простір гейміфікованої допомоги, спільнота
+              однодумців та зручний хаб для системної підтримки всіх напрямків
+              Фонду.
+            </p>
+            <StoreButtons tone="light" class="hero__stores" />
+            <p class="hero__note">Безплатно. Для iOS та Android.</p>
+          </div>
 
-        <div class="hero__visual">
-          <PhoneMockup class="hero__phone" />
+          <div class="hero__visual">
+            <PhoneMockup class="hero__phone" @range="phoneScroll = $event" />
+          </div>
         </div>
+        <BarcodeStrip class="hero__barcode" />
       </div>
-      <BarcodeStrip class="hero__barcode" />
+      <div class="hero__spacer" aria-hidden="true" />
     </section>
 
     <!-- БЛОК 2: ПРО ПРОЄКТ ТА КЛЮЧОВІ МЕХАНІКИ -->
     <section class="features" aria-labelledby="features-title">
       <div class="container">
-        <TapeLabel>Що всередині</TapeLabel>
-        <h2 id="features-title" class="features__title">
-          Допомога, зібрана<br />в один застосунок
+        <TapeLabel v-reveal>Що всередині</TapeLabel>
+        <h2 id="features-title" v-reveal="80" class="features__title">
+          Екосистема корисних дій<br />та винагород у твоєму смартфоні
         </h2>
 
         <ul class="features__grid">
-          <li v-for="f in features" :key="f.id" class="feature">
-            <span class="feature__icon" aria-hidden="true">
-              <svg v-if="f.id === 'quests'" viewBox="0 0 28 28" fill="none">
-                <circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="2.2" />
-                <circle cx="14" cy="14" r="5.5" stroke="currentColor" stroke-width="2.2" />
-                <circle cx="14" cy="14" r="1.6" fill="currentColor" />
-              </svg>
-              <svg v-else-if="f.id === 'donations'" viewBox="0 0 28 28" fill="none">
-                <path
-                  d="M14 23s-8.4-5.2-10.4-10A5.8 5.8 0 0 1 14 8.6 5.8 5.8 0 0 1 24.4 13c-2 4.8-10.4 10-10.4 10Z"
-                  stroke="currentColor"
-                  stroke-width="2.2"
-                  stroke-linejoin="round"
-                />
-                <path d="M9 13.5h3l1.5-3 2 5 1.5-2.5h2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
-              </svg>
-              <svg v-else-if="f.id === 'voting'" viewBox="0 0 28 28" fill="none">
-                <rect x="4" y="11" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2.2" />
-                <path d="M9.5 11V7.8A2.8 2.8 0 0 1 12.3 5h3.4a2.8 2.8 0 0 1 2.8 2.8V11" stroke="currentColor" stroke-width="2.2" />
-                <path d="m10 17 2.7 2.7L18.5 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <svg v-else viewBox="0 0 28 28" fill="none">
-                <path
-                  d="M4 8.5A3.5 3.5 0 0 1 7.5 5h9A3.5 3.5 0 0 1 20 8.5v4a3.5 3.5 0 0 1-3.5 3.5H10l-4.4 3.6c-.7.5-1.6 0-1.6-.8V8.5Z"
-                  stroke="currentColor"
-                  stroke-width="2.2"
-                  stroke-linejoin="round"
-                />
-                <path d="M22.5 11.5c.9.6 1.5 1.6 1.5 2.8v7.4c0 .8-1 1.3-1.6.8L18.5 19H15a3.5 3.5 0 0 1-2.4-1" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-              </svg>
-            </span>
-            <h3 class="feature__title">{{ f.title }}</h3>
+          <li
+            v-for="(f, i) in features"
+            :key="f.id"
+            v-reveal="i * 90"
+            class="feature"
+          >
+            <div>
+              <span class="feature__icon" aria-hidden="true">
+                <svg v-if="f.id === 'quests'" viewBox="0 0 28 28" fill="none">
+                  <circle
+                    cx="14"
+                    cy="14"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  />
+                  <circle
+                    cx="14"
+                    cy="14"
+                    r="5.5"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  />
+                  <circle cx="14" cy="14" r="1.6" fill="currentColor" />
+                </svg>
+                <svg
+                  v-else-if="f.id === 'donations'"
+                  viewBox="0 0 28 28"
+                  fill="none"
+                >
+                  <path
+                    d="M14 23s-8.4-5.2-10.4-10A5.8 5.8 0 0 1 14 8.6 5.8 5.8 0 0 1 24.4 13c-2 4.8-10.4 10-10.4 10Z"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M9 13.5h3l1.5-3 2 5 1.5-2.5h2"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <svg
+                  v-else-if="f.id === 'voting'"
+                  viewBox="0 0 28 28"
+                  fill="none"
+                >
+                  <rect
+                    x="4"
+                    y="11"
+                    width="20"
+                    height="13"
+                    rx="2"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  />
+                  <path
+                    d="M9.5 11V7.8A2.8 2.8 0 0 1 12.3 5h3.4a2.8 2.8 0 0 1 2.8 2.8V11"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  />
+                  <path
+                    d="m10 17 2.7 2.7L18.5 14"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  v-else-if="f.id === 'community'"
+                  viewBox="0 0 28 28"
+                  fill="none"
+                >
+                  <path
+                    d="M4 8.5A3.5 3.5 0 0 1 7.5 5h9A3.5 3.5 0 0 1 20 8.5v4a3.5 3.5 0 0 1-3.5 3.5H10l-4.4 3.6c-.7.5-1.6 0-1.6-.8V8.5Z"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M22.5 11.5c.9.6 1.5 1.6 1.5 2.8v7.4c0 .8-1 1.3-1.6.8L18.5 19H15a3.5 3.5 0 0 1-2.4-1"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg v-else viewBox="0 0 28 28" fill="none">
+                  <path
+                    d="M14 7.2C11.6 5.4 8.4 5 4.5 5.6c-.6.1-1 .6-1 1.2v13.4c0 .8.7 1.3 1.5 1.2 3.4-.5 6.4-.1 9 1.6 2.6-1.7 5.6-2.1 9-1.6.8.1 1.5-.4 1.5-1.2V6.8c0-.6-.4-1.1-1-1.2-3.9-.6-7.1-.2-9.5 1.6Z"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M14 7.2V23"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  />
+                  <path
+                    d="M7 10.5c1.5-.2 2.9-.1 4 .3M7 14.5c1.5-.2 2.9-.1 4 .3M17 10.8c1.1-.4 2.5-.5 4-.3M17 14.8c1.1-.4 2.5-.5 4-.3"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+              <h3 class="feature__title">{{ f.title }}</h3>
+            </div>
             <p class="feature__text">{{ f.text }}</p>
           </li>
         </ul>
@@ -159,15 +278,17 @@ const features = [
     <!-- БЛОК 3: КОРИСТУВАЦЬКИЙ ГІД -->
     <section class="guide" aria-labelledby="guide-title">
       <div class="container guide__inner">
-        <div class="guide__copy">
+        <div v-reveal class="guide__copy">
           <h2 id="guide-title" class="guide__title">Користувацький гід</h2>
           <p class="guide__text">
-            Покроковий мануал: як зареєструватися, проходити квести, підключити підписку на донати
-            й голосувати за рішення Фонду.
+            Як швидко зареєструватися, розібратися з квестами, коїнами й балами
+            рейтингу, налаштувати підписку на донати та впливати на рішення
+            Фонду.
           </p>
         </div>
         <a
           v-if="guideUrl"
+          v-reveal="140"
           class="guide__btn"
           :href="guideUrl"
           target="_blank"
@@ -177,7 +298,12 @@ const features = [
           Прочитати гід
           <ChevronMark class="guide__btn-chev" />
         </a>
-        <span v-else class="guide__btn guide__btn--soon" aria-disabled="true">
+        <span
+          v-else
+          v-reveal="140"
+          class="guide__btn guide__btn--soon"
+          aria-disabled="true"
+        >
           Гід з’явиться тут із релізом застосунку
         </span>
       </div>
@@ -186,10 +312,16 @@ const features = [
     <!-- ФІНАЛЬНИЙ ЗАКЛИК -->
     <section class="cta" aria-labelledby="cta-title">
       <div class="container cta__inner">
-        <span class="cta__chev"><ChevronMark /></span>
-        <h2 id="cta-title" class="cta__title">Будь впритул<br />до перемоги</h2>
-        <p class="cta__text">Встанови застосунок — і кожна твоя дія працюватиме на результат.</p>
-        <StoreButtons tone="light" />
+        <span v-reveal class="cta__chev"><ChevronMark /></span>
+        <h2 id="cta-title" v-reveal="80" class="cta__title">
+          Будь впритул<br />до дії та людей
+        </h2>
+        <p v-reveal="160" class="cta__text">
+          Твій смартфон уже містить усе необхідне, щоб наближати перемогу й
+          отримувати за це заслужені винагороди. Приєднуйся до «Впритул» просто
+          зараз.
+        </p>
+        <StoreButtons v-reveal="240" tone="light" />
       </div>
       <BarcodeStrip class="cta__barcode" />
     </section>
@@ -200,23 +332,34 @@ const features = [
         <div class="footer__warning">
           <BrandLogo tone="light" class="footer__logo" />
           <p>
-            «Впритул» — офіційний цифровий сервіс Благодійного фонду Сергія Притули. Завантажуйте
-            застосунок лише з офіційних маркетів App Store та Google Play. Фонд ніколи не просить
-            ваші паролі чи повні дані карток. Персональні дані користувачів захищені та
-            обробляються відповідно до законодавства України.
+            «Впритул» — офіційний цифровий сервіс Благодійного фонду Сергія
+            Притули. Завантажуйте застосунок лише з офіційних маркетів App Store
+            та Google Play. Фонд ніколи не просить ваші паролі чи повні дані
+            карток. Персональні дані користувачів захищені та обробляються
+            відповідно до законодавства України.
           </p>
         </div>
 
         <nav class="footer__links" aria-label="Правові документи">
-          <NuxtLink to="/privacy-policy">Політика конфіденційності</NuxtLink>
-          <NuxtLink to="/terms-of-use">Умови використання</NuxtLink>
-          <NuxtLink to="/data-protection">Політика захисту даних</NuxtLink>
-          <NuxtLink to="/license">Ліцензійні документи</NuxtLink>
+          <a
+            v-for="doc in legalDocs"
+            :key="doc.label"
+            :href="doc.href"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ doc.label }}
+          </a>
         </nav>
 
         <div class="footer__bottom">
-          <span>© {{ new Date().getFullYear() }} Благодійний фонд Сергія Притули</span>
-          <a href="https://prytulafoundation.org" rel="noopener">prytulafoundation.org</a>
+          <span
+            >© {{ new Date().getFullYear() }} Благодійний фонд Сергія
+            Притули</span
+          >
+          <a href="https://prytulafoundation.org" rel="noopener"
+            >prytulafoundation.org</a
+          >
         </div>
       </div>
     </footer>
@@ -246,7 +389,9 @@ const features = [
   text-decoration: none;
   border-bottom: 1px solid rgba(215, 216, 211, 0.35);
   padding-bottom: 2px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .topbar__link:hover {
@@ -259,15 +404,50 @@ const features = [
   background: var(--ink);
   color: var(--bone);
   position: relative;
-  overflow: hidden;
+  /* clip, а не hidden: hidden робить hero scroll-контейнером і вбиває sticky-пін */
+  overflow: clip;
+}
+
+.hero__sticky {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Подовжує hero на довжину стрічки телефона: поки sticky-блок стоїть,
+   скрол «витрачається» на прогортання екрана */
+.hero__spacer {
+  display: none;
 }
 
 .hero__inner {
+  width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   align-items: center;
   gap: 48px;
-  padding-block: 72px 96px;
+  padding-block: clamp(40px, 9vh, 72px) clamp(48px, 11vh, 96px);
+}
+
+@media (min-width: 901px) {
+  .hero__sticky {
+    position: sticky;
+    top: 0;
+    min-height: 100dvh;
+  }
+
+  .hero__inner {
+    flex: 1;
+  }
+
+  .hero__spacer {
+    display: block;
+    height: var(--phone-scroll, 0px);
+  }
+
+  /* Телефон не вищий за пін-вьюпорт: ~230px на паддінги і штрих-код */
+  .hero__visual .hero__phone {
+    width: min(320px, 78vw, calc((100dvh - 230px) * 0.4848));
+  }
 }
 
 .hero__eyebrow {
@@ -390,16 +570,28 @@ const features = [
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 
+.feature:last-child {
+  grid-column: span 2 / span 2;
+}
+
 .feature {
+  flex: 0 1 calc((100% - 80px) / 5);
+  min-width: 0;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   padding: 28px 24px 30px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  user-select: none;
 }
 
 .feature:hover {
@@ -548,7 +740,6 @@ const features = [
 
 .cta__barcode {
   color: rgba(215, 216, 211, 0.14);
-  transform: scaleY(-1);
 }
 
 /* ---------- Footer ---------- */
@@ -593,7 +784,9 @@ const features = [
   text-decoration: none;
   border-bottom: 1px solid rgba(215, 216, 211, 0.3);
   padding-bottom: 2px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .footer__links a:hover {
@@ -631,19 +824,23 @@ const features = [
     transform: none;
   }
 
-  .features__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .feature {
+    flex-basis: calc((100% - 20px) / 2);
   }
 
   .guide__inner {
     flex-direction: column;
     align-items: flex-start;
   }
+  .features__grid {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 560px) {
-  .features__grid {
-    grid-template-columns: 1fr;
+  .feature {
+    flex-basis: 100%;
   }
 
   .footer__warning {

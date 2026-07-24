@@ -1,13 +1,23 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ color?: string }>(), { color: 'currentColor' })
+withDefaults(defineProps<{ color?: string }>(), { color: "currentColor" });
 </script>
 
 <template>
   <!-- Знак »« — «впритул»: дві групи шевронів, що сходяться -->
-  <svg viewBox="0 0 88 40" fill="none" aria-hidden="true">
-    <path d="M4 4l16 16L4 36" :stroke="color" stroke-width="9" />
-    <path d="M24 4l16 16-16 16" :stroke="color" stroke-width="9" />
-    <path d="M84 4L68 20l16 16" :stroke="color" stroke-width="9" />
-    <path d="M64 4L48 20l16 16" :stroke="color" stroke-width="9" />
+  <svg
+    width="145"
+    height="66"
+    viewBox="0 0 145 66"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M0 6.67913L12.7526 0L35.3772 32.8064L12.7526 65.6128L0 58.9337L17.9983 32.8064L0 6.67913ZM66.2459 32.8064L45.7618 62.4692L32.7269 56.2313L48.867 32.8064L32.7269 9.38148L45.7618 3.14361L66.2459 32.8064Z"
+      fill="#FF9200"
+    />
+    <path
+      d="M98.7863 3.14361L111.821 9.38148L95.6865 32.8064L111.821 56.2313L98.7863 62.4692L78.3076 32.8064L98.7863 3.14361ZM126.547 32.8064L144.545 58.9337L131.795 65.6128L109.165 32.8064L131.798 0L144.548 6.67913L126.55 32.8064H126.547Z"
+      fill="#FF9200"
+    />
   </svg>
 </template>
