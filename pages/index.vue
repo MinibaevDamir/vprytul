@@ -81,15 +81,15 @@ const features = [
 const legalDocs = [
   {
     label: "Політика конфіденційності",
-    file: "Політика конфіденційності застосунку «Впритул» (VPRYTUL).pdf",
+    file: "privacy-policy.pdf",
   },
   {
     label: "Умови використання",
-    file: "Умови використання мобільного застосунку «Впритул» (VPRYTUL).pdf",
+    file: "terms-of-use.pdf",
   },
   {
     label: "Політика захисту даних",
-    file: "Політика захисту даних мобільного застосунку «Впритул» (VPRYTUL).pdf",
+    file: "data-protection-policy.pdf",
   },
 ].map((d) => ({ label: d.label, href: `/${encodeURI(d.file)}` }));
 </script>
