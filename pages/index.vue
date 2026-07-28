@@ -77,21 +77,27 @@ const features = [
   },
 ];
 
-// PDF-документи з public/ — імена файлів містять кирилицю і пробіли, тому кодуємо
 const legalDocs = [
   {
     label: "Політика конфіденційності",
     file: "privacy-policy.pdf",
+    fileEn: "privacy-policy-eng.pdf",
   },
   {
     label: "Умови використання",
     file: "terms-of-use.pdf",
+    fileEn: "terms-of-use-eng.pdf",
   },
   {
     label: "Політика захисту даних",
     file: "data-protection-policy.pdf",
+    fileEn: "data-protection-policy-eng.pdf",
   },
-].map((d) => ({ label: d.label, href: `/${encodeURI(d.file)}` }));
+].map((d) => ({
+  label: d.label,
+  href: `/${encodeURI(d.file)}`,
+  hrefEn: `/${encodeURI(d.fileEn)}`,
+}));
 </script>
 
 <template>
@@ -341,15 +347,13 @@ const legalDocs = [
         </div>
 
         <nav class="footer__links" aria-label="Правові документи">
-          <a
-            v-for="doc in legalDocs"
-            :key="doc.label"
-            :href="doc.href"
-            target="_blank"
-            rel="noopener"
-          >
-            {{ doc.label }}
-          </a>
+          <div v-for="doc in legalDocs" :key="doc.label" class="footer__doc">
+            <span class="footer__doc-name">{{ doc.label }}</span>
+            <div class="footer__doc-langs">
+              <a :href="doc.href" target="_blank" rel="noopener" aria-label="`${doc.label} — українська версія`">UA</a>
+              <a :href="doc.hrefEn" target="_blank" rel="noopener" :aria-label="`${doc.label} — English version`">EN</a>
+            </div>
+          </div>
         </nav>
 
         <div class="footer__bottom">
@@ -772,24 +776,45 @@ const legalDocs = [
 .footer__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 36px;
+  gap: 16px 40px;
   margin-top: 44px;
   padding-top: 28px;
   border-top: 1px solid rgba(215, 216, 211, 0.16);
 }
 
-.footer__links a {
-  color: var(--bone);
-  font-size: 0.85rem;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(215, 216, 211, 0.3);
-  padding-bottom: 2px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+.footer__doc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.footer__links a:hover {
+.footer__doc-name {
+  font-size: 0.85rem;
+  color: rgba(215, 216, 211, 0.8);
+}
+
+.footer__doc-langs {
+  display: flex;
+  gap: 4px;
+}
+
+.footer__doc-langs a {
+  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--bone);
+  border: 1px solid rgba(215, 216, 211, 0.3);
+  border-radius: 4px;
+  padding: 2px 6px;
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.footer__doc-langs a:hover {
   color: var(--orange);
   border-color: var(--orange);
 }
