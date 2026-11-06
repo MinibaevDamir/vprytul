@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { guideUrl, siteUrl } = useRuntimeConfig().public;
+const { siteUrl } = useRuntimeConfig().public;
 const { trackGuideOpen } = useAnalytics();
 
 const title = "Впритул — застосунок Благодійного фонду Сергія Притули";
@@ -49,73 +49,117 @@ useHead({
 // подовжується вниз, поки sticky-блок стоїть і «гортається» екран телефона
 const phoneScroll = ref(0);
 
+// Ілюстрації розміщені як у макеті: x/y — зсув від лівого верхнього кута
+// рамки механіки (1049×570), r — поворот. На вужчих екранах ідуть у потік.
+// m — мобільний макет (660:2284): ширина ілюстрації, ширина першого абзацу і
+// піксельна «хмара» фону на стику рамок (x/y — від лівого верхнього кута рамки).
 const features = [
   {
     id: "quests",
-    title: "Квести та місії",
-    text: "Виконуй щоденні завдання, долучайся до інформаційних та вірусних квестів. Кожна твоя активність — це не просто галочка у списку, це реальна допомога фонду та твій особистий внесок у спільну справу, який одразу винагороджується.",
+    title: "Квести",
+    side: "left",
+    paras: [
+      "Завдання, які приносять користь тут і зараз, із нарахуванням балів за успішне виконання",
+      "Участь у всеукраїнських та локальних акціях і заходах: донація крові, плетіння сіток, допомога в притулках для тварин, розбір сміття після прильотів, толоки.",
+    ],
+    art: { src: "/img/art-quests.svg", w: 559, h: 417, x: 524, y: 38.2 },
+    m: {
+      w: 345,
+      p1w: 329,
+      cloud: { src: "/img/cloud-2.svg", x: -50, y: -80.7, w: 410, h: 200, r: 180 },
+    },
+  },
+  {
+    id: "learning",
+    title: "Навчання",
+    side: "right",
+    paras: [
+      "Інтерактивні та практичні освітні кампанії, перевірені фахівцями Фонду та профільними експертами",
+      "Оборонні технології, перша домедична допомога, кібербезпека, основи OSINT, правовий навігатор, ментальне здоров’я і багато іншого",
+    ],
+    art: { src: "/img/art-learning.svg", w: 443.847, h: 472.848, x: 13.81, y: 57.93, r: 5.79 },
+    m: {
+      w: 308.867,
+      p1w: 295,
+      cloud: { src: "/img/cloud-3.svg", x: -355, y: -227.6, w: 1068, h: 388 },
+    },
   },
   {
     id: "donations",
-    title: "Система донатів та винагороди",
-    text: "Підтримувати збори стало так само просто, як і налаштувати звичну щомісячну платіжну підписку. Жодної зайвої бюрократії. За кожен донат і кожну виконану дію тобі автоматично нараховуються бали рейтингу та коїни. Збирай їх і обмінюй у нашому магазині на цікавинки від партнерів, мерч та приємні бонуси.",
-  },
-  {
-    id: "voting",
-    title: "Голосування та вплив",
-    text: "Зароблені за активність бали рейтингу дають тобі можливість впливати на внутрішні процеси. Ми залучаємо спільноту до прийняття рішень у межах визначених Фондом векторів. Це унікальний шанс долучитися до обговорення ініціатив проєкту, відчуваючи свій реальний вплив на спільноту.",
+    title: "Донати",
+    side: "left",
+    paras: [
+      "Підтримка разово або за підпискою. Бо донат — це база, і тут ми не вигадали нічого нового!",
+      "Донати за напрямами: мілітарний, гуманітарний, інституційний. А також усі актуальні збори Фонду, що регулярно оновлюються",
+    ],
+    art: { src: "/img/art-donations.svg", w: 313, h: 496, x: 646, y: 17.2 },
+    m: {
+      w: 217.812,
+      p1w: 329,
+      cloud: { src: "/img/cloud-4.svg", x: -601, y: -230.1, w: 1048, h: 400 },
+    },
   },
   {
     id: "community",
     title: "Спільнота",
-    text: "Отримуй доступ до затишних регіональних чатів та великої загальної спільноти єдинодумців у всіх куточках країни (і світу!). Але головне — прямий і живий зв’язок із командою Фонду, амбасадорами, лідерами думок, військовими та діячами культури. Будь ближче до тих, хто творить історію щодня.",
+    side: "right",
+    paras: [
+      "Гуртування по осередках. Обговорення ініціатив та проблем своєї громади, пошук та втілення рішень",
+      "Загальний та окремі чати за регіонами для спілкування та обміну досвідом. Зустрічі з однодумцями на офлайн-подіях Фонду або партнерів",
+    ],
+    art: { src: "/img/art-community.svg", w: 488, h: 476, x: 21, y: 46.8 },
+    m: {
+      w: 339.592,
+      p1w: 329,
+      cloud: { src: "/img/cloud-3.svg", x: -297, y: -257.9, w: 1068, h: 388 },
+    },
   },
   {
-    id: "learning",
-    title: "Навчання, квізи та новини",
-    text: "Бути свідомим громадянином цікаво, коли інформація подається без душноти. На тебе чекає величезний спектр контенту: від закулісся роботи Фонду Сергія Притули до ексклюзивних статей, розборів та відео від наших експертів і запрошених гостей. Проходь квізи, підвищуй свою обізнаність у безпеці, волонтерстві та суспільних ініціативах легко та захопливо.",
+    id: "voting",
+    title: "Голосування",
+    side: "left",
+    paras: [
+      "Участь у прийнятті важливих рішень спільноти, адже складні питання не вирішуються одноосібно",
+      "Обрання тем освітніх кампаній та запрошених експертів, вибір напрямів активностей. Назви зборів та амбасадорів, які підтримуватимуть цей збір",
+    ],
+    art: { src: "/img/art-voting.svg", w: 446, h: 393, x: 580, y: 82.8 },
+    m: {
+      w: 310.365,
+      p1w: 322,
+      cloud: { src: "/img/cloud-3.svg", x: -576, y: -249.8, w: 1068, h: 388 },
+    },
   },
 ];
 
+// Українські версії — окремі сторінки, англійські — PDF у public/
+// Бейджі EN тимчасово приховані — щоб повернути, достатньо true
+const showEnglishDocs = false;
 const legalDocs = [
   {
-    label: "Політика конфіденційності",
-    file: "privacy-policy.pdf",
-    fileEn: "privacy-policy-eng.pdf",
-  },
-  {
     label: "Умови використання",
-    file: "terms-of-use.pdf",
+    to: "/terms-of-use",
     fileEn: "terms-of-use-eng.pdf",
   },
   {
+    label: "Політика конфіденційності",
+    to: "/privacy-policy",
+    fileEn: "privacy-policy-eng.pdf",
+  },
+  {
     label: "Політика захисту даних",
-    file: "data-protection-policy.pdf",
+    to: "/data-protection-policy",
     fileEn: "data-protection-policy-eng.pdf",
   },
 ].map((d) => ({
   label: d.label,
-  href: `/${encodeURI(d.file)}`,
+  to: d.to,
   hrefEn: `/${encodeURI(d.fileEn)}`,
 }));
 </script>
 
+
 <template>
   <div class="page">
-    <!-- ШАПКА -->
-    <header class="topbar">
-      <div class="container topbar__inner">
-        <BrandLogo tone="light" class="topbar__logo" />
-        <a
-          class="topbar__link"
-          href="https://prytulafoundation.org"
-          rel="noopener"
-        >
-          Проєкт Благодійного фонду Сергія Притули
-        </a>
-      </div>
-    </header>
-
     <!-- БЛОК 1: ГОЛОВНИЙ ЕКРАН -->
     <section
       class="hero"
@@ -125,296 +169,206 @@ const legalDocs = [
       <div class="hero__sticky">
         <div class="container hero__inner">
           <div class="hero__copy">
-            <p class="hero__eyebrow">
-              <span class="hero__chev hero__chev--in"><ChevronMark /></span>
-              <span
-                >Застосунок, де твоя активність конвертується в&nbsp;системну
-                допомогу та&nbsp;приносить винагороди</span
-              >
-            </p>
             <h1 class="hero__title">
-              Впритул<span class="hero__title-colon">:</span><br />
-              зменшуй дистанцію<br />
-              <span class="hero__title-accent">до дії та людей</span>
+              <picture>
+                <!-- на мобільному логотип в один рядок -->
+                <source
+                  media="(max-width: 700px)"
+                  srcset="/img/logo-line.svg"
+                  width="322"
+                  height="37"
+                />
+                <img
+                  class="hero__logo"
+                  src="/img/logo.svg"
+                  width="550"
+                  height="238"
+                  alt="Впритул"
+                />
+              </picture>
+              <span class="hero__slogan">до дії та людей</span>
             </h1>
-            <p class="hero__sub">
-              Твій персональний простір гейміфікованої допомоги, спільнота
-              однодумців та зручний хаб для системної підтримки всіх напрямків
-              Фонду.
+            <StoreButtons class="hero__stores" />
+            <p class="hero__lead">
+              Навички цивільної стійкості, спільнота підтримки і системна
+              благодійність – в єдиному цифровому сервісі
             </p>
-            <StoreButtons tone="light" class="hero__stores" />
-            <p class="hero__note">Безплатно. Для iOS та Android.</p>
+            <p class="hero__text">
+              Ми створили цей застосунок, щоб гуртувати суспільство навколо
+              системної підтримки Сил оборони України, готуватися бути надійною
+              опорою для себе й інших, діяти впевнено та разом розвивати свої
+              громади — щодня, а не від кризи до кризи
+            </p>
           </div>
 
-          <div class="hero__visual">
-            <PhoneMockup class="hero__phone" @range="phoneScroll = $event" />
-          </div>
+          <PhoneMockup class="hero__phone" @range="phoneScroll = $event" />
         </div>
-        <BarcodeStrip class="hero__barcode" />
       </div>
       <div class="hero__spacer" aria-hidden="true" />
     </section>
 
-    <!-- БЛОК 2: ПРО ПРОЄКТ ТА КЛЮЧОВІ МЕХАНІКИ -->
+    <!-- БЛОК 2: КЛЮЧОВІ МЕХАНІКИ -->
     <section class="features" aria-labelledby="features-title">
       <div class="container">
-        <TapeLabel v-reveal>Що всередині</TapeLabel>
-        <h2 id="features-title" v-reveal="80" class="features__title">
-          Екосистема корисних дій<br />та винагород у твоєму смартфоні
-        </h2>
+        <h2 id="features-title" class="features__title">Що всередині</h2>
 
-        <ul class="features__grid">
+        <ul class="features__list">
           <li
-            v-for="(f, i) in features"
+            v-for="f in features"
             :key="f.id"
-            v-reveal="i * 90"
             class="feature"
+            :class="`feature--${f.side}`"
+            :style="{
+              '--p1w': `${f.m.p1w}px`,
+              '--cloud': `url(${f.m.cloud.src})`,
+              '--cx': `${f.m.cloud.x}px`,
+              '--cy': `${f.m.cloud.y}px`,
+              '--cw': `${f.m.cloud.w}px`,
+              '--ch': `${f.m.cloud.h}px`,
+              '--cr': `${f.m.cloud.r ?? 0}deg`,
+            }"
           >
-            <div>
-              <span class="feature__icon" aria-hidden="true">
-                <svg v-if="f.id === 'quests'" viewBox="0 0 28 28" fill="none">
-                  <circle
-                    cx="14"
-                    cy="14"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                  />
-                  <circle
-                    cx="14"
-                    cy="14"
-                    r="5.5"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                  />
-                  <circle cx="14" cy="14" r="1.6" fill="currentColor" />
-                </svg>
-                <svg
-                  v-else-if="f.id === 'donations'"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                >
-                  <path
-                    d="M14 23s-8.4-5.2-10.4-10A5.8 5.8 0 0 1 14 8.6 5.8 5.8 0 0 1 24.4 13c-2 4.8-10.4 10-10.4 10Z"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M9 13.5h3l1.5-3 2 5 1.5-2.5h2"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linejoin="round"
-                    stroke-linecap="round"
-                  />
-                </svg>
-                <svg
-                  v-else-if="f.id === 'voting'"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                >
-                  <rect
-                    x="4"
-                    y="11"
-                    width="20"
-                    height="13"
-                    rx="2"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                  />
-                  <path
-                    d="M9.5 11V7.8A2.8 2.8 0 0 1 12.3 5h3.4a2.8 2.8 0 0 1 2.8 2.8V11"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                  />
-                  <path
-                    d="m10 17 2.7 2.7L18.5 14"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <svg
-                  v-else-if="f.id === 'community'"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                >
-                  <path
-                    d="M4 8.5A3.5 3.5 0 0 1 7.5 5h9A3.5 3.5 0 0 1 20 8.5v4a3.5 3.5 0 0 1-3.5 3.5H10l-4.4 3.6c-.7.5-1.6 0-1.6-.8V8.5Z"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M22.5 11.5c.9.6 1.5 1.6 1.5 2.8v7.4c0 .8-1 1.3-1.6.8L18.5 19H15a3.5 3.5 0 0 1-2.4-1"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <svg v-else viewBox="0 0 28 28" fill="none">
-                  <path
-                    d="M14 7.2C11.6 5.4 8.4 5 4.5 5.6c-.6.1-1 .6-1 1.2v13.4c0 .8.7 1.3 1.5 1.2 3.4-.5 6.4-.1 9 1.6 2.6-1.7 5.6-2.1 9-1.6.8.1 1.5-.4 1.5-1.2V6.8c0-.6-.4-1.1-1-1.2-3.9-.6-7.1-.2-9.5 1.6Z"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M14 7.2V23"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                  />
-                  <path
-                    d="M7 10.5c1.5-.2 2.9-.1 4 .3M7 14.5c1.5-.2 2.9-.1 4 .3M17 10.8c1.1-.4 2.5-.5 4-.3M17 14.8c1.1-.4 2.5-.5 4-.3"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </span>
+            <div v-reveal class="feature__copy">
               <h3 class="feature__title">{{ f.title }}</h3>
+              <p v-for="(p, i) in f.paras" :key="i" class="feature__text">
+                {{ p }}
+              </p>
             </div>
-            <p class="feature__text">{{ f.text }}</p>
+            <img
+              v-reveal="120"
+              class="feature__art"
+              :src="f.art.src"
+              :width="f.art.w"
+              :height="f.art.h"
+              :style="{
+                '--x': `${f.art.x}px`,
+                '--y': `${f.art.y}px`,
+                '--r': `${f.art.r ?? 0}deg`,
+                '--mw': `${f.m.w}px`,
+              }"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
           </li>
         </ul>
       </div>
     </section>
 
-    <!-- БЛОК 3: КОРИСТУВАЦЬКИЙ ГІД -->
-    <section class="guide" aria-labelledby="guide-title">
-      <div class="container guide__inner">
-        <div v-reveal class="guide__copy">
-          <h2 id="guide-title" class="guide__title">Користувацький гід</h2>
-          <p class="guide__text">
-            Як швидко зареєструватися, розібратися з квестами, коїнами й балами
-            рейтингу, налаштувати підписку на донати та впливати на рішення
-            Фонду.
-          </p>
+    <div class="finale">
+      <!-- ФІНАЛЬНИЙ ЗАКЛИК -->
+      <section class="cta" aria-labelledby="cta-title">
+        <div class="container cta__inner">
+          <h2 id="cta-title" v-reveal class="cta__title">
+            <!-- у мобільному макеті рядки без розділових знаків -->
+            Зменшуй дистанцію<span class="cta__punct">.</span><br />
+            будь впритул<span class="cta__punct">.</span><br />
+            завантажуй застосунок<span class="cta__punct">!</span>
+          </h2>
+          <StoreButtons v-reveal="120" size="lg" class="cta__stores" />
+          <img
+            v-reveal="240"
+            class="cta__chevrons"
+            src="/img/chevrons.svg"
+            width="635"
+            height="259"
+            alt=""
+            loading="lazy"
+          />
         </div>
-        <a
-          v-if="guideUrl"
-          v-reveal="140"
-          class="guide__btn"
-          :href="guideUrl"
-          target="_blank"
-          rel="noopener"
-          @click="trackGuideOpen()"
-        >
-          Прочитати гід
-          <ChevronMark class="guide__btn-chev" />
-        </a>
-        <span
-          v-else
-          v-reveal="140"
-          class="guide__btn guide__btn--soon"
-          aria-disabled="true"
-        >
-          Гід з’явиться тут із релізом застосунку
-        </span>
-      </div>
-    </section>
+      </section>
 
-    <!-- ФІНАЛЬНИЙ ЗАКЛИК -->
-    <section class="cta" aria-labelledby="cta-title">
-      <div class="container cta__inner">
-        <span v-reveal class="cta__chev"><ChevronMark /></span>
-        <h2 id="cta-title" v-reveal="80" class="cta__title">
-          Будь впритул<br />до дії та людей
-        </h2>
-        <p v-reveal="160" class="cta__text">
-          Твій смартфон уже містить усе необхідне, щоб наближати перемогу й
-          отримувати за це заслужені винагороди. Приєднуйся до «Впритул» просто
-          зараз.
-        </p>
-        <StoreButtons v-reveal="240" tone="light" />
-      </div>
-      <BarcodeStrip class="cta__barcode" />
-    </section>
-
-    <!-- БЛОК 4: ЮРИДИЧНИЙ ПІДВАЛ -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer__warning">
-          <BrandLogo tone="light" class="footer__logo" />
-          <p>
+      <!-- БЛОК 4: ЮРИДИЧНИЙ ПІДВАЛ -->
+      <footer class="footer">
+        <div class="container footer__inner">
+          <p class="footer__warning">
             «Впритул» — офіційний цифровий сервіс Благодійного фонду Сергія
-            Притули. Завантажуйте застосунок лише з офіційних маркетів App Store
-            та Google Play. Фонд ніколи не просить ваші паролі чи повні дані
-            карток. Персональні дані користувачів захищені та обробляються
+            Притули. Застосунок доступний до завантаження з офіційних маркетів
+            App Store та Google Play. Фонд ніколи не просить паролі чи повні
+            дані карток. Персональні дані користувачів захищені та обробляються
             відповідно до законодавства України.
           </p>
-        </div>
 
-        <nav class="footer__links" aria-label="Правові документи">
-          <div v-for="doc in legalDocs" :key="doc.label" class="footer__doc">
-            <span class="footer__doc-name">{{ doc.label }}</span>
-            <div class="footer__doc-langs">
-              <a :href="doc.href" target="_blank" rel="noopener" aria-label="`${doc.label} — українська версія`">UA</a>
-              <a :href="doc.hrefEn" target="_blank" rel="noopener" :aria-label="`${doc.label} — English version`">EN</a>
-            </div>
-          </div>
-        </nav>
+          <nav class="footer__links" aria-label="Документи">
+            <NuxtLink
+              class="footer__link"
+              to="/user-guide"
+              @click="trackGuideOpen()"
+              >Користувацький гід</NuxtLink
+            >
+            <span v-for="doc in legalDocs" :key="doc.label" class="footer__doc">
+              <NuxtLink class="footer__link" :to="doc.to">{{
+                doc.label
+              }}</NuxtLink>
+              <a
+                v-if="showEnglishDocs"
+                class="footer__lang"
+                :href="doc.hrefEn"
+                target="_blank"
+                rel="noopener"
+                hreflang="en"
+                :aria-label="`${doc.label} — English version`"
+                >EN</a
+              >
+            </span>
+          </nav>
 
-        <div class="footer__bottom">
-          <span
-            >© {{ new Date().getFullYear() }} Благодійний фонд Сергія
-            Притули</span
-          >
-          <a href="https://prytulafoundation.org" rel="noopener"
+          <img
+            class="footer__divider"
+            src="/img/divider.svg"
+            width="1059"
+            height="1"
+            alt=""
+          />
+
+          <p class="footer__copy">
+            © {{ new Date().getFullYear() }} Благодійний фонд Сергія Притули
+          </p>
+          <a
+            class="footer__link footer__site"
+            href="https://prytulafoundation.org"
+            rel="noopener"
             >prytulafoundation.org</a
           >
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* ---------- Шапка ---------- */
-.topbar {
-  background: var(--ink);
-}
+/* Координати у коментарях — з макета 1440px (Figma 699:1785) */
 
-.topbar__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-block: 20px;
-}
-
-.topbar__logo {
-  font-size: 22px;
-}
-
-.topbar__link {
-  color: var(--bone);
-  font-size: 0.8rem;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(215, 216, 211, 0.35);
-  padding-bottom: 2px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.topbar__link:hover {
-  color: var(--orange);
-  border-color: var(--orange);
+/* Піксельні «хмари» фону виходять за краї екрана */
+.page {
+  overflow-x: clip;
 }
 
 /* ---------- Hero ---------- */
 .hero {
-  background: var(--ink);
-  color: var(--bone);
   position: relative;
-  /* clip, а не hidden: hidden робить hero scroll-контейнером і вбиває sticky-пін */
-  overflow: clip;
 }
 
+/* Власний шар, щоб фон-дизеринг лягав під контент, але над фоном сторінки */
 .hero__sticky {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
+}
+
+/* Фон hero: суцільний #323232, що внизу розсипається «пікселями» і
+   заходить на 216px у секцію механік (як у макеті до y≈1197) */
+.hero__sticky::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -216px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    url("/img/bg-hero.svg") center bottom / 1440px 2252px repeat-x,
+    linear-gradient(var(--surface), var(--surface)) top / 100%
+      calc(100% - 537px) no-repeat;
 }
 
 /* Подовжує hero на довжину стрічки телефона: поки sticky-блок стоїть,
@@ -426,10 +380,13 @@ const legalDocs = [
 .hero__inner {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  grid-template-columns: minmax(0, 550px) var(--phone-w);
+  justify-content: space-between;
   align-items: center;
-  gap: 48px;
-  padding-block: clamp(40px, 9vh, 72px) clamp(48px, 11vh, 96px);
+  /* лівий край тексту і правий край телефона — як у макеті */
+  padding-left: calc(24px + 5px);
+  padding-right: calc(24px + 13px);
+  --phone-w: 372px;
 }
 
 @media (min-width: 901px) {
@@ -441,273 +398,232 @@ const legalDocs = [
 
   .hero__inner {
     flex: 1;
+    padding-block: 40px;
+    /* телефон не вищий за пін-вьюпорт */
+    --phone-w: min(372px, calc((100dvh - 80px) * 0.48025));
   }
 
   .hero__spacer {
     display: block;
     height: var(--phone-scroll, 0px);
   }
-
-  /* Телефон не вищий за пін-вьюпорт: ~230px на паддінги і штрих-код */
-  .hero__visual .hero__phone {
-    width: min(320px, 78vw, calc((100dvh - 230px) * 0.4848));
-  }
 }
 
-.hero__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 0 0 28px;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 0.85rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--orange);
-}
-
-.hero__chev {
-  width: 44px;
-  color: var(--orange);
-}
-
-.hero__chev--in :deep(svg) {
-  overflow: visible;
-}
-
-.hero__chev--in :deep(path:nth-child(1)),
-.hero__chev--in :deep(path:nth-child(2)) {
-  animation: chev-left 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.hero__chev--in :deep(path:nth-child(3)),
-.hero__chev--in :deep(path:nth-child(4)) {
-  animation: chev-right 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes chev-left {
-  from {
-    transform: translateX(-26px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes chev-right {
-  from {
-    transform: translateX(26px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+.hero__copy {
+  container-type: inline-size;
 }
 
 .hero__title {
   margin: 0;
+  font-weight: 400;
+}
+
+.hero__logo {
+  width: 100%;
+  height: auto;
+}
+
+/* 64px при ширині колонки 550px; на вужчих — пропорційно логотипу */
+.hero__slogan {
+  display: block;
+  margin-left: calc(5 / 550 * 100cqi);
   font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(2.4rem, 5.4vw, 4.3rem);
-  line-height: 1.02;
+  font-weight: 800;
+  font-size: calc(64 / 550 * 100cqi);
+  line-height: normal;
   text-transform: uppercase;
-  color: var(--paper);
-  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--cream);
 }
 
-.hero__title-colon {
-  color: var(--orange);
+.hero__stores {
+  margin-top: 19px;
 }
 
-.hero__title-accent {
-  color: var(--orange);
+.hero__lead,
+.hero__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: normal;
+  color: var(--cream);
 }
 
-.hero__sub {
-  max-width: 46ch;
-  margin: 28px 0 36px;
-  font-size: 1.02rem;
-  line-height: 1.75;
-  color: var(--bone);
+.hero__lead {
+  margin-top: 27px;
 }
 
-.hero__note {
-  margin: 18px 0 0;
-  font-size: 0.78rem;
-  color: rgba(215, 216, 211, 0.6);
-}
-
-.hero__visual {
-  display: flex;
-  justify-content: center;
+.hero__text {
+  margin-top: 65px;
+  margin-left: -3px;
 }
 
 .hero__phone {
-  transform: rotate(2deg);
+  width: var(--phone-w);
+  justify-self: end;
 }
 
-.hero__barcode {
-  color: rgba(215, 216, 211, 0.28);
-}
-
-/* ---------- Features ---------- */
+/* ---------- Механіки ---------- */
 .features {
-  background: var(--paper);
-  padding-block: 88px 96px;
+  position: relative;
+  z-index: 1;
+  padding-top: 74px;
 }
 
 .features__title {
-  margin: 26px 0 48px;
+  margin: 0 0 82px 2px;
   font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(1.8rem, 3.6vw, 2.8rem);
-  line-height: 1.05;
+  font-weight: 800;
+  font-size: clamp(40px, 6.667vw, 96px);
+  line-height: normal;
   text-transform: uppercase;
+  color: var(--mist);
 }
 
-.features__grid {
+.features__list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.feature:last-child {
-  grid-column: span 2 / span 2;
 }
 
 .feature {
-  flex: 0 1 calc((100% - 80px) / 5);
-  min-width: 0;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  padding: 28px 24px 30px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  user-select: none;
+  position: relative;
+  min-height: 570px;
 }
 
-.feature:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 44px rgba(29, 29, 27, 0.1);
+/* Кутові мітки рамки: ассет із макета, кути в нативному розмірі, порожні
+   ребра тягнуться — сусідні рамки разом дають мітки «├ ┤» */
+.feature::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 25px solid transparent;
+  border-image: url("/img/frame-corners.svg") 25;
+  pointer-events: none;
 }
 
-.feature__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: var(--orange);
-  color: var(--ink);
-}
-
-.feature__icon svg {
-  width: 28px;
-  height: 28px;
+.feature__copy {
+  max-width: 451px;
 }
 
 .feature__title {
-  margin: 22px 0 10px;
+  margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.08rem;
-  line-height: 1.25;
+  font-weight: 900;
+  font-size: 64px;
+  line-height: normal;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  color: var(--orange);
 }
 
 .feature__text {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: var(--ash);
+  font-size: 20px;
+  line-height: normal;
+  color: var(--mist);
 }
 
-/* ---------- Guide ---------- */
-.guide {
-  background: var(--orange);
-  color: var(--ink);
+.feature__title + .feature__text {
+  margin-top: 36px;
 }
 
-.guide__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-  padding-block: 56px;
+.feature__text + .feature__text {
+  margin-top: 60px;
 }
 
-.guide__title {
-  margin: 0 0 12px;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
-  text-transform: uppercase;
+.feature__art {
+  max-width: 100%;
+  height: auto;
+  transform: rotate(var(--r));
 }
 
-.guide__text {
-  margin: 0;
-  max-width: 52ch;
-  font-size: 0.95rem;
-  line-height: 1.7;
+/* Ілюстрація з v-reveal: поворот з макета зберігаємо під час появи */
+.feature__art.reveal {
+  transform: translateY(24px) rotate(var(--r));
 }
 
-.guide__btn {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 30px;
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: 14px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  transition: transform 0.15s ease;
+.feature__art.reveal.is-rev {
+  transform: rotate(var(--r));
 }
 
-.guide__btn:hover {
-  transform: translateY(-2px);
+@media (min-width: 1100px) {
+  .feature {
+    height: 570px;
+    padding: 83px 39px 0;
+  }
+
+  .feature--right .feature__copy {
+    margin-left: 518px;
+  }
+
+  .feature__art {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    max-width: none;
+  }
+
+  /* У макеті два абзаци ширші за колонку */
+  .feature:nth-child(4) .feature__text:first-of-type {
+    margin-right: -11px;
+  }
+
+  .feature:last-child .feature__text:last-of-type {
+    margin-right: -39px;
+  }
 }
 
-.guide__btn-chev {
-  width: 34px;
-  color: var(--orange);
+@media (max-width: 1099px) {
+  .feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 40px;
+    padding: 64px 40px;
+  }
+
+  .feature--right .feature__art {
+    order: -1;
+  }
+
+  .feature__art {
+    justify-self: center;
+  }
+
+  .feature__title {
+    font-size: clamp(36px, 5.8vw, 64px);
+  }
+
+  .feature__text {
+    font-size: 18px;
+  }
+
+  .feature__title + .feature__text {
+    margin-top: 28px;
+  }
+
+  .feature__text + .feature__text {
+    margin-top: 24px;
+  }
 }
 
-.guide__btn--soon {
-  background: rgba(29, 29, 27, 0.12);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 0.85rem;
-  text-transform: none;
-  letter-spacing: 0;
-  cursor: default;
-}
-
-/* ---------- Фінальний CTA ---------- */
-.cta {
-  background: var(--ink);
-  color: var(--bone);
+/* ---------- Фінальний заклик і підвал ---------- */
+.finale {
   position: relative;
+  z-index: 0;
+  padding-top: 142px;
+}
+
+/* Фон підвалу: «пікселі» з y≈3890 стають суцільним #323232 до кінця сторінки */
+.finale::before {
+  content: "";
+  position: absolute;
+  inset: -222px 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    url("/img/bg-finale.svg") center top / 1440px 537px repeat-x,
+    linear-gradient(var(--surface), var(--surface)) 0 537px / 100%
+      calc(100% - 537px) no-repeat;
 }
 
 .cta__inner {
@@ -715,166 +631,359 @@ const legalDocs = [
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-block: 88px 72px;
-}
-
-.cta__chev {
-  width: 64px;
-  color: var(--orange);
-  margin-bottom: 26px;
 }
 
 .cta__title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(2rem, 4.6vw, 3.4rem);
-  line-height: 1.04;
+  font-weight: 800;
+  font-size: clamp(26px, 4.444vw, 64px);
+  line-height: 0.9375;
   text-transform: uppercase;
-  color: var(--paper);
+  color: var(--orange);
 }
 
-.cta__text {
-  margin: 20px 0 36px;
-  max-width: 44ch;
-  color: var(--bone);
-  font-size: 0.98rem;
-  line-height: 1.7;
+.cta__stores {
+  justify-content: center;
+  margin-top: 47px;
 }
 
-.cta__barcode {
-  color: rgba(215, 216, 211, 0.14);
+.cta__chevrons {
+  margin-top: 46px;
+  width: 635px;
+  height: auto;
 }
 
-/* ---------- Footer ---------- */
 .footer {
-  background: var(--ink);
-  color: var(--bone);
-  padding-block: 64px 40px;
-  border-top: 1px solid rgba(215, 216, 211, 0.14);
+  padding: 46px 0 96px;
+}
+
+.footer__inner {
+  padding-inline: calc(24px + 12px);
 }
 
 .footer__warning {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 36px;
-  align-items: start;
-  max-width: 880px;
-}
-
-.footer__logo {
-  font-size: 26px;
-}
-
-.footer__warning p {
   margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.8;
-  color: rgba(215, 216, 211, 0.8);
+  font-size: 14px;
+  line-height: normal;
 }
 
 .footer__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 40px;
-  margin-top: 44px;
-  padding-top: 28px;
-  border-top: 1px solid rgba(215, 216, 211, 0.16);
+  justify-content: space-between;
+  /* мінімальний проміжок: чотири посилання з бейджами EN мають влізти в рядок */
+  gap: 16px;
+  margin-top: 37px;
 }
 
 .footer__doc {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.footer__doc-name {
-  font-size: 0.85rem;
-  color: rgba(215, 216, 211, 0.8);
+.footer__link {
+  font-size: 16px;
+  line-height: normal;
+  color: var(--cream);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  transition: color 0.15s ease;
 }
 
-.footer__doc-langs {
-  display: flex;
-  gap: 4px;
-}
-
-.footer__doc-langs a {
-  font-size: 0.7rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--bone);
-  border: 1px solid rgba(215, 216, 211, 0.3);
-  border-radius: 4px;
-  padding: 2px 6px;
-  text-decoration: none;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease;
-}
-
-.footer__doc-langs a:hover {
+.footer__link:hover,
+.footer__lang:hover {
   color: var(--orange);
+}
+
+.footer__lang {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--mist);
+  text-decoration: none;
+  border: 1px solid rgba(203, 204, 198, 0.4);
+  border-radius: 4px;
+  padding: 3px 5px 2px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.footer__lang:hover {
   border-color: var(--orange);
 }
 
-.footer__bottom {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 40px;
-  font-size: 0.75rem;
-  color: rgba(215, 216, 211, 0.55);
+/* Лінія в макеті на 5px ширша за текстовий блок з кожного боку */
+.footer__divider {
+  width: calc(100% + 34px);
+  max-width: none;
+  height: 1px;
+  margin: 49px -17px 0;
 }
 
-.footer__bottom a {
-  color: inherit;
-  text-decoration: none;
+.footer__copy {
+  margin: 50px 0 0;
+  font-size: 16px;
+  line-height: normal;
 }
 
-.footer__bottom a:hover {
-  color: var(--orange);
+.footer__site {
+  display: inline-block;
+  margin-top: 22px;
 }
 
 /* ---------- Адаптив ---------- */
 @media (max-width: 900px) {
   .hero__inner {
-    grid-template-columns: 1fr;
-    padding-block: 56px 72px;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 56px;
+    padding: 56px 24px 72px;
+    --phone-w: min(320px, 82vw);
+  }
+
+  .hero__copy {
+    width: min(100%, 550px);
   }
 
   .hero__phone {
-    transform: none;
+    justify-self: center;
   }
 
-  .feature {
-    flex-basis: calc((100% - 20px) / 2);
+  .features {
+    padding-top: 40px;
   }
 
-  .guide__inner {
-    flex-direction: column;
-    align-items: flex-start;
+  .features__title {
+    margin-bottom: 48px;
   }
-  .features__grid {
-    display: flex;
-    flex-direction: column;
+
+  .finale {
+    padding-top: 96px;
+  }
+
+  .footer__inner {
+    padding-inline: 24px;
+  }
+
+  .footer__divider {
+    width: 100%;
+    margin-inline: 0;
   }
 }
+/* ---------- Мобільний макет (Figma 660:2284, екран 402px) ----------
+   Відступи — з макета; --col — ширина текстової колонки (322px на 402px) */
+@media (max-width: 700px) {
+  .page {
+    --col: min(100vw - 80px, 480px);
+  }
 
-@media (max-width: 560px) {
+  /* Фон hero — лише піксельна «хмара» вгорі, без суцільної підкладки */
+  .hero__sticky::before {
+    inset: 0 auto auto 0;
+    width: 855px;
+    height: 319px;
+    background: url("/img/cloud-1.svg") 0 0 / 100% 100% no-repeat;
+  }
+
+  /* Порядок як у макеті: логотип, слоган, телефон, кнопки, тексти */
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: calc(480px + 80px);
+    padding: 75px 40px 0;
+    --phone-w: calc(var(--col) * 0.7278);
+  }
+
+  .hero__copy {
+    display: contents;
+  }
+
+  .hero__slogan {
+    margin-left: 0;
+    font-size: calc(var(--col) * 0.1168);
+    color: var(--mist);
+  }
+
+  .hero__phone {
+    order: 1;
+    align-self: center;
+    margin-top: 10.7px;
+  }
+
+  .hero__inner .hero__stores {
+    order: 2;
+    flex-wrap: nowrap;
+    margin-top: 15.5px;
+    gap: 7.56px;
+    /* дві кнопки на всю ширину колонки */
+    font-size: calc((var(--col) - 7.56px) / 5.36);
+    --stores-bg: var(--mist);
+  }
+
+  .hero__lead,
+  .hero__text {
+    order: 3;
+    margin-right: -7px;
+    color: var(--mist);
+  }
+
+  .hero__lead {
+    margin-top: 14.8px;
+  }
+
+  .hero__text {
+    margin-top: 92px;
+    margin-left: 0;
+  }
+
+  /* Механіки: рамка на всю ширину, текст по центру, ілюстрація посередині,
+     другий абзац унизу рамки */
+  .features {
+    padding-top: 111px;
+  }
+
+  .features > .container {
+    max-width: calc(480px + 84px);
+    padding-inline: 42px;
+  }
+
+  .features__title {
+    margin: 0 0 91px -2px;
+    font-size: 44px;
+    white-space: nowrap;
+  }
+
   .feature {
-    flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-height: min(734px, 182.6vw);
+    padding: 20px 0 10px;
   }
 
-  .footer__warning {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .feature + .feature {
+    margin-top: 140px;
   }
 
-  .topbar__link {
+  /* піксельна «хмара» на стику рамок */
+  .feature::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: var(--cx);
+    top: var(--cy);
+    width: var(--cw);
+    height: var(--ch);
+    background: var(--cloud) 0 0 / 100% 100% no-repeat;
+    transform: rotate(var(--cr));
+    pointer-events: none;
+  }
+
+  .feature__copy {
+    display: contents;
+  }
+
+  .feature__title {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .feature__title + .feature__text {
+    order: 1;
+    width: min(var(--p1w), 100% + 11px);
+    margin-top: 12px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .feature .feature__art {
+    order: 2;
+    width: var(--mw);
+    max-width: calc(100% + 30px);
+    margin-block: auto;
+  }
+
+  .feature__text + .feature__text {
+    order: 3;
+    align-self: stretch;
+    margin-top: 24px;
+    padding-inline: 10px;
+    font-size: 14px;
+  }
+
+  /* Фінал: без суцільної підкладки, лише «хмара» за заголовком */
+  .finale {
+    padding-top: 200px;
+  }
+
+  .finale::before {
+    inset: -111px auto auto -364px;
+    width: 1048px;
+    height: 400px;
+    background: url("/img/cloud-4.svg") 0 0 / 100% 100% no-repeat;
+  }
+
+  .cta__title {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .cta__punct {
     display: none;
+  }
+
+  .cta__inner .cta__stores {
+    flex-wrap: nowrap;
+    margin-top: 7.7px;
+    gap: 23.55px;
+    font-size: 45.05px;
+    --stores-bg: var(--mist);
+  }
+
+  .cta__chevrons {
+    width: 432px;
+    max-width: none;
+    margin-top: 18.4px;
+  }
+
+  .footer {
+    padding: 37.5px 0 64px;
+    color: var(--mist);
+  }
+
+  .footer__inner {
+    max-width: calc(480px + 76px);
+    padding-inline: 38px;
+  }
+
+  .footer__links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-top: 53px;
+  }
+
+  .footer__link {
+    color: var(--mist);
+  }
+
+  .footer__divider {
+    width: 100%;
+    margin: 30px 0 0;
+  }
+
+  .footer__copy {
+    margin: 29px 0 0 -3px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .footer__site {
+    margin-top: 24px;
+    font-size: 14px;
   }
 }
 </style>

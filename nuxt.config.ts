@@ -10,7 +10,6 @@ export default defineNuxtConfig({
       fbPixelId: '', // NUXT_PUBLIC_FB_PIXEL_ID
       appStoreUrl: '', // NUXT_PUBLIC_APP_STORE_URL — пряме посилання після рев'ю
       playStoreUrl: '', // NUXT_PUBLIC_PLAY_STORE_URL
-      guideUrl: '', // NUXT_PUBLIC_GUIDE_URL — PDF-мануал, додамо згодом
       siteUrl: 'https://vprytul.prytulafoundation.org'
     }
   },
@@ -20,7 +19,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'uk' },
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'theme-color', content: '#1D1D1B' }
+        { name: 'theme-color', content: '#323232' }
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }]
     }
@@ -30,6 +29,10 @@ export default defineNuxtConfig({
   // Пререндер оголошуємо через routeRules — так сторінки потрапляють у .vercel/output
   // як статичні асети з коректним кешуванням, див. https://vercel.com/docs/frameworks/full-stack/nuxt
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true },
+    '/user-guide': { prerender: true },
+    '/privacy-policy': { prerender: true },
+    '/terms-of-use': { prerender: true },
+    '/data-protection-policy': { prerender: true }
   }
 })

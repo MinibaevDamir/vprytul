@@ -41,23 +41,20 @@
 }
 
 /* ---------- Токени ---------- */
+/* Палітра редизайну (Figma QZPMAanIwLVryPh2kCEvdq, фрейм «Desktop - 7» 699:1785) */
 :root {
-  --ink: #1d1d1b;        /* графіт — фони hero/footer */
-  --ink-soft: #2a2a27;   /* картки на темному */
-  --paper: #f2f1ec;      /* теплий білий — світлі секції */
-  --card: #ffffff;
-  --orange: #f29837;     /* брендовий помаранч */
-  --ember: #c2482a;      /* глибокий помаранч квест-карток */
-  --bone: #d7d8d3;       /* світло-сірий текст на темному */
-  --ash: #6e6d68;        /* приглушені підписи */
-  --line: rgba(29, 29, 27, 0.12);
+  --bg: #1a1a19;         /* основний фон сторінки */
+  --surface: #323232;    /* фон hero та підвалу */
+  --cream: #ece7da;      /* світлий текст, кнопки маркетів */
+  --mist: #cbccc6;       /* описи механік, заголовок «Що всередині» */
+  --orange: #fd660b;     /* акцент: логотип, заголовки, рамки */
+  --ink: #1d1d1b;        /* текст на кремових кнопках */
+  --paper: #f0efe9;      /* фон сторінок документів */
 
   --font-display: 'Tektur', 'e-Ukraine', sans-serif;
   --font-body: 'e-Ukraine', system-ui, sans-serif;
 
-  --radius-card: 20px;
-  --radius-chip: 10px;
-  --container: 1160px;
+  --container: 1097px;   /* 1049px контенту + 2 × 24px паддінгу */
 }
 
 /* ---------- База ---------- */
@@ -74,9 +71,9 @@ html {
 body {
   margin: 0;
   font-family: var(--font-body);
-  font-weight: 300;
-  color: var(--ink);
-  background: var(--paper);
+  font-weight: 400;
+  color: var(--cream);
+  background: var(--bg);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -107,6 +104,11 @@ a {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* Сторінки документів світлі — щоб і overscroll не блимав темним */
+body.is-paper {
+  background: var(--paper);
 }
 
 .container {

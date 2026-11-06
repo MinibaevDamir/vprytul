@@ -1,5 +1,7 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ tone?: 'light' | 'dark' }>(), { tone: 'light' })
+// Розміри з макета: md — hero (268×81), lg — фінальний заклик (289×87).
+// На мобільному сторінка перевизначає масштаб через font-size і колір через --stores-bg.
+withDefaults(defineProps<{ size?: 'md' | 'lg' }>(), { size: 'md' })
 
 const { appStoreUrl, playStoreUrl } = useRuntimeConfig().public
 const { trackStoreClick } = useAnalytics()
@@ -10,22 +12,15 @@ const playStoreHref = playStoreUrl || 'https://prytulafoundation.org/'
 </script>
 
 <template>
-  <div class="stores" :class="`stores--${tone}`">
+  <div class="stores" :class="`stores--${size}`">
     <a
-      class="stores__btn"
+      class="stores__btn stores__btn--apple"
       :href="appStoreHref"
       rel="noopener"
       data-store="app_store"
       @click="trackStoreClick('app_store')"
     >
-      <svg class="stores__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path
-          d="M17.05 12.54c-.03-2.5 2.04-3.7 2.13-3.76-1.16-1.7-2.97-1.93-3.61-1.96-1.54-.15-3 .9-3.78.9-.77 0-1.98-.88-3.25-.85-1.67.02-3.22.97-4.08 2.47-1.74 3.02-.44 7.49 1.25 9.94.83 1.2 1.82 2.55 3.12 2.5 1.25-.05 1.72-.8 3.24-.8 1.5 0 1.94.8 3.26.78 1.35-.02 2.2-1.22 3.02-2.42.95-1.39 1.34-2.73 1.36-2.8-.03-.02-2.61-1-2.66-4Z"
-        />
-        <path
-          d="M14.56 5.2c.69-.83 1.15-1.99 1.02-3.15-.99.04-2.18.66-2.89 1.49-.63.73-1.19 1.91-1.04 3.04 1.1.09 2.23-.56 2.91-1.38Z"
-        />
-      </svg>
+      <img class="stores__icon" src="/img/ic-apple.svg" width="45.8284" height="56.4042" alt="" />
       <span class="stores__text">
         <small>Завантажити в</small>
         App Store
@@ -33,18 +28,13 @@ const playStoreHref = playStoreUrl || 'https://prytulafoundation.org/'
     </a>
 
     <a
-      class="stores__btn"
+      class="stores__btn stores__btn--google"
       :href="playStoreHref"
       rel="noopener"
       data-store="google_play"
       @click="trackStoreClick('google_play')"
     >
-      <svg class="stores__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M3.6 1.9c-.36.38-.57.96-.57 1.72v16.76c0 .76.21 1.34.58 1.7l.09.09 9.39-9.39v-.21L3.7 1.8l-.1.1Z" />
-        <path d="m16.22 15.9-3.13-3.12v-.21l3.13-3.13.07.04 3.71 2.11c1.06.6 1.06 1.58 0 2.18l-3.7 2.1-.08.04Z" />
-        <path d="m16.3 15.86-3.2-3.2-9.5 9.5c.35.37.93.42 1.58.05l11.12-6.35" />
-        <path d="M16.3 8.61 5.18 2.29c-.65-.38-1.23-.32-1.58.05l9.5 9.5 3.2-3.23Z" />
-      </svg>
+      <img class="stores__icon" src="/img/ic-google-play.svg" width="40.9986" height="45.6601" alt="" />
       <span class="stores__text">
         <small>Доступно в</small>
         Google Play
@@ -54,68 +44,85 @@ const playStoreHref = playStoreUrl || 'https://prytulafoundation.org/'
 </template>
 
 <style scoped>
+/* Розміри — у пікселях hero-кнопки макета, поділених на 100: font-size .stores
+   задає масштаб (100px = 1:1), тож сторінка може масштабувати кнопки цілком */
 .stores {
+  --label: 0.5667em;
+  --name: 0.2167em;
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 0.125em;
+  font-size: 100px;
+}
+
+.stores--lg {
+  --label: 0.5833em;
+  --name: 0.222em;
+  gap: 0.2022em;
+  font-size: 108.12px;
 }
 
 .stores__btn {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 22px;
-  border-radius: 14px;
+  width: 2.68em;
+  height: 0.81em;
+  padding-left: calc(var(--pad) * 0.01em);
+  gap: calc(var(--gap) * 0.01em);
+  border-radius: 0.218em;
+  background: var(--stores-bg, var(--cream));
+  color: var(--ink);
   text-decoration: none;
-  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.stores__btn--apple {
+  --pad: 26.87;
+  --gap: 24.3;
+  --icon-w: 42.39;
+  --icon-h: 52.17;
+}
+
+.stores__btn--google {
+  --pad: 32.07;
+  --gap: 17;
+  --icon-w: 38.11;
+  --icon-h: 42.44;
 }
 
 .stores__btn:hover {
   transform: translateY(-2px);
+  background: var(--orange);
 }
 
 .stores__btn:active {
   transform: translateY(0);
 }
 
-.stores--light .stores__btn {
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.stores--light .stores__btn:hover {
-  background: var(--orange);
-}
-
-.stores--dark .stores__btn {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.stores--dark .stores__btn:hover {
-  background: var(--orange);
-  color: var(--ink);
-}
-
 .stores__icon {
-  width: 26px;
-  height: 26px;
   flex: none;
+  width: calc(var(--icon-w) * 0.01em);
+  height: calc(var(--icon-h) * 0.01em);
+}
+
+/* У макеті яблуко оптично підняте на ~3px над центром кнопки */
+.stores__btn--apple .stores__icon {
+  transform: translateY(-0.03em);
 }
 
 .stores__text {
   display: flex;
   flex-direction: column;
-  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: var(--name);
   line-height: 1.15;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .stores__text small {
-  font-family: var(--font-body);
   font-weight: 400;
-  font-size: 0.68rem;
-  opacity: 0.75;
+  font-size: var(--label);
+  line-height: 1.2;
 }
 </style>
