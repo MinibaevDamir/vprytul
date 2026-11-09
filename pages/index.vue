@@ -49,9 +49,10 @@ useHead({
 // подовжується вниз, поки sticky-блок стоїть і «гортається» екран телефона
 const phoneScroll = ref(0);
 
-// Ілюстрації розміщені як у макеті: x/y — зсув від лівого верхнього кута
-// рамки механіки (1049×570), r — поворот. На вужчих екранах ідуть у потік.
-// m — мобільний макет (660:2284): ширина ілюстрації, ширина першого абзацу і
+// Ілюстрації розміщені як у макеті (805:2405): x/y — зсув від лівого верхнього
+// кута рамки механіки (1049×570). На вужчих екранах ідуть у потік.
+// m — мобільний макет (660:2284): ширина ілюстрації (для нових ілюстрацій —
+// у тій самій пропорції до десктопу, що й у макеті), ширина першого абзацу і
 // піксельна «хмара» фону на стику рамок (x/y — від лівого верхнього кута рамки).
 const features = [
   {
@@ -62,9 +63,9 @@ const features = [
       "Завдання, які приносять користь тут і зараз, із нарахуванням балів за успішне виконання",
       "Участь у всеукраїнських та локальних акціях і заходах: донація крові, плетіння сіток, допомога в притулках для тварин, розбір сміття після прильотів, толоки.",
     ],
-    art: { src: "/img/art-quests.svg", w: 559, h: 417, x: 524, y: 38.2 },
+    art: { src: "/img/art-quests.svg", w: 474.304, h: 356.369, x: 555, y: 78 },
     m: {
-      w: 345,
+      w: 292.7,
       p1w: 329,
       cloud: { src: "/img/cloud-2.svg", x: -50, y: -80.7, w: 410, h: 200, r: 180 },
     },
@@ -77,9 +78,9 @@ const features = [
       "Інтерактивні та практичні освітні кампанії, перевірені фахівцями Фонду та профільними експертами",
       "Оборонні технології, перша домедична допомога, кібербезпека, основи OSINT, правовий навігатор, ментальне здоров’я і багато іншого",
     ],
-    art: { src: "/img/art-learning.svg", w: 443.847, h: 472.848, x: 13.81, y: 57.93, r: 5.79 },
+    art: { src: "/img/art-learning.svg", w: 440.323, h: 457.639, x: 23, y: 62.8 },
     m: {
-      w: 308.867,
+      w: 306.4,
       p1w: 295,
       cloud: { src: "/img/cloud-3.svg", x: -355, y: -227.6, w: 1068, h: 388 },
     },
@@ -92,9 +93,9 @@ const features = [
       "Підтримка разово або за підпискою. Бо донат — це база, і тут ми не вигадали нічого нового!",
       "Донати за напрямами: мілітарний, гуманітарний, інституційний. А також усі актуальні збори Фонду, що регулярно оновлюються",
     ],
-    art: { src: "/img/art-donations.svg", w: 313, h: 496, x: 646, y: 17.2 },
+    art: { src: "/img/art-donations.svg", w: 302.126, h: 478.362, x: 596, y: 31.2 },
     m: {
-      w: 217.812,
+      w: 210.3,
       p1w: 329,
       cloud: { src: "/img/cloud-4.svg", x: -601, y: -230.1, w: 1048, h: 400 },
     },
@@ -107,9 +108,9 @@ const features = [
       "Гуртування по осередках. Обговорення ініціатив та проблем своєї громади, пошук та втілення рішень",
       "Загальний та окремі чати за регіонами для спілкування та обміну досвідом. Зустрічі з однодумцями на офлайн-подіях Фонду або партнерів",
     ],
-    art: { src: "/img/art-community.svg", w: 488, h: 476, x: 21, y: 46.8 },
+    art: { src: "/img/art-community.svg", w: 461, h: 449.328, x: 33, y: 67.3 },
     m: {
-      w: 339.592,
+      w: 320.8,
       p1w: 329,
       cloud: { src: "/img/cloud-3.svg", x: -297, y: -257.9, w: 1068, h: 388 },
     },
@@ -122,9 +123,9 @@ const features = [
       "Участь у прийнятті важливих рішень спільноти, адже складні питання не вирішуються одноосібно",
       "Обрання тем освітніх кампаній та запрошених експертів, вибір напрямів активностей. Назви зборів та амбасадорів, які підтримуватимуть цей збір",
     ],
-    art: { src: "/img/art-voting.svg", w: 446, h: 393, x: 580, y: 82.8 },
+    art: { src: "/img/art-voting.svg", w: 421.746, h: 378.711, x: 592, y: 97 },
     m: {
-      w: 310.365,
+      w: 293.5,
       p1w: 322,
       cloud: { src: "/img/cloud-3.svg", x: -576, y: -249.8, w: 1068, h: 388 },
     },
@@ -167,6 +168,14 @@ const legalDocs = [
       :style="{ '--phone-scroll': `${phoneScroll}px` }"
     >
       <div class="hero__sticky">
+        <!-- піксельний перехід фону: десктоп — дизеринг, мобільний — «хмара» -->
+        <PixelShimmer
+          class="hero__dither"
+          src="/img/bg-hero.svg"
+          :view="[0, 1715, 1440, 537]"
+          tile
+        />
+        <PixelShimmer class="hero__cloud" src="/img/cloud-1.svg" />
         <div class="container hero__inner">
           <div class="hero__copy">
             <h1 class="hero__title">
@@ -220,14 +229,17 @@ const legalDocs = [
             :class="`feature--${f.side}`"
             :style="{
               '--p1w': `${f.m.p1w}px`,
-              '--cloud': `url(${f.m.cloud.src})`,
               '--cx': `${f.m.cloud.x}px`,
               '--cy': `${f.m.cloud.y}px`,
               '--cw': `${f.m.cloud.w}px`,
               '--ch': `${f.m.cloud.h}px`,
-              '--cr': `${f.m.cloud.r ?? 0}deg`,
             }"
           >
+            <PixelShimmer
+              class="feature__cloud"
+              :src="f.m.cloud.src"
+              :flip="f.m.cloud.r === 180"
+            />
             <div v-reveal class="feature__copy">
               <h3 class="feature__title">{{ f.title }}</h3>
               <p v-for="(p, i) in f.paras" :key="i" class="feature__text">
@@ -243,7 +255,6 @@ const legalDocs = [
               :style="{
                 '--x': `${f.art.x}px`,
                 '--y': `${f.art.y}px`,
-                '--r': `${f.art.r ?? 0}deg`,
                 '--mw': `${f.m.w}px`,
               }"
               alt=""
@@ -256,6 +267,12 @@ const legalDocs = [
     </section>
 
     <div class="finale">
+      <PixelShimmer
+        class="finale__dither"
+        src="/img/bg-finale.svg"
+        tile
+      />
+      <PixelShimmer class="finale__cloud" src="/img/cloud-4.svg" />
       <!-- ФІНАЛЬНИЙ ЗАКЛИК -->
       <section class="cta" aria-labelledby="cta-title">
         <div class="container cta__inner">
@@ -266,15 +283,7 @@ const legalDocs = [
             завантажуй застосунок<span class="cta__punct">!</span>
           </h2>
           <StoreButtons v-reveal="120" size="lg" class="cta__stores" />
-          <img
-            v-reveal="240"
-            class="cta__chevrons"
-            src="/img/chevrons.svg"
-            width="635"
-            height="259"
-            alt=""
-            loading="lazy"
-          />
+          <PixelShimmer class="cta__chevrons" src="/img/chevrons.svg" />
         </div>
       </section>
 
@@ -358,17 +367,28 @@ const legalDocs = [
 }
 
 /* Фон hero: суцільний #323232, що внизу розсипається «пікселями» і
-   заходить на 216px у секцію механік (як у макеті до y≈1197) */
+   заходить на 216px у секцію механік (як у макеті до y≈1197).
+   Суцільна частина — тут, піксельна смуга 1440×537 — PixelShimmer */
 .hero__sticky::before {
   content: "";
   position: absolute;
-  inset: 0 0 -216px;
+  inset: 0 0 calc(537px - 216px);
   z-index: -1;
   pointer-events: none;
-  background:
-    url("/img/bg-hero.svg") center bottom / 1440px 2252px repeat-x,
-    linear-gradient(var(--surface), var(--surface)) top / 100%
-      calc(100% - 537px) no-repeat;
+  background: var(--surface);
+}
+
+.hero__dither {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -216px;
+  height: 537px;
+  z-index: -1;
+}
+
+.hero__cloud {
+  display: none;
 }
 
 /* Подовжує hero на довжину стрічки телефона: поки sticky-блок стоїть,
@@ -533,16 +553,6 @@ const legalDocs = [
 .feature__art {
   max-width: 100%;
   height: auto;
-  transform: rotate(var(--r));
-}
-
-/* Ілюстрація з v-reveal: поворот з макета зберігаємо під час появи */
-.feature__art.reveal {
-  transform: translateY(24px) rotate(var(--r));
-}
-
-.feature__art.reveal.is-rev {
-  transform: rotate(var(--r));
 }
 
 @media (min-width: 1100px) {
@@ -613,17 +623,29 @@ const legalDocs = [
   padding-top: 142px;
 }
 
-/* Фон підвалу: «пікселі» з y≈3890 стають суцільним #323232 до кінця сторінки */
+/* Фон підвалу: «пікселі» з y≈3890 (PixelShimmer, смуга 1440×537) стають
+   суцільним #323232 до кінця сторінки */
 .finale::before {
   content: "";
   position: absolute;
-  inset: -222px 0 0;
+  inset: calc(537px - 222px) 0 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    url("/img/bg-finale.svg") center top / 1440px 537px repeat-x,
-    linear-gradient(var(--surface), var(--surface)) 0 537px / 100%
-      calc(100% - 537px) no-repeat;
+  background: var(--surface);
+}
+
+.finale__dither {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -222px;
+  height: 537px;
+  z-index: -1;
+}
+
+.finale__cloud,
+.feature__cloud {
+  display: none;
 }
 
 .cta__inner {
@@ -651,7 +673,8 @@ const legalDocs = [
 .cta__chevrons {
   margin-top: 46px;
   width: 635px;
-  height: auto;
+  max-width: 100%;
+  aspect-ratio: 635 / 259;
 }
 
 .footer {
@@ -779,11 +802,19 @@ const legalDocs = [
   }
 
   /* Фон hero — лише піксельна «хмара» вгорі, без суцільної підкладки */
-  .hero__sticky::before {
-    inset: 0 auto auto 0;
+  .hero__sticky::before,
+  .hero__dither {
+    display: none;
+  }
+
+  .hero__cloud {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 855px;
     height: 319px;
-    background: url("/img/cloud-1.svg") 0 0 / 100% 100% no-repeat;
+    z-index: -1;
   }
 
   /* Порядок як у макеті: логотип, слоган, телефон, кнопки, тексти */
@@ -869,17 +900,14 @@ const legalDocs = [
   }
 
   /* піксельна «хмара» на стику рамок */
-  .feature::after {
-    content: "";
+  .feature__cloud {
+    display: block;
     position: absolute;
     z-index: -1;
     left: var(--cx);
     top: var(--cy);
     width: var(--cw);
     height: var(--ch);
-    background: var(--cloud) 0 0 / 100% 100% no-repeat;
-    transform: rotate(var(--cr));
-    pointer-events: none;
   }
 
   .feature__copy {
@@ -919,11 +947,19 @@ const legalDocs = [
     padding-top: 200px;
   }
 
-  .finale::before {
-    inset: -111px auto auto -364px;
+  .finale::before,
+  .finale__dither {
+    display: none;
+  }
+
+  .finale__cloud {
+    display: block;
+    position: absolute;
+    left: -364px;
+    top: -111px;
     width: 1048px;
     height: 400px;
-    background: url("/img/cloud-4.svg") 0 0 / 100% 100% no-repeat;
+    z-index: -1;
   }
 
   .cta__title {
