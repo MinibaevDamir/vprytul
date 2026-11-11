@@ -37,6 +37,7 @@ export default defineNuxtConfig({
     '/terms-of-use': { prerender: true },
     '/data-protection-policy': { prerender: true },
     '/en/privacy-policy': { prerender: true },
-    '/en/data-protection-policy': { prerender: true }
+    '/en/data-protection-policy': { prerender: true },
+    '/en/terms-of-use': { prerender: true }
   }
 })

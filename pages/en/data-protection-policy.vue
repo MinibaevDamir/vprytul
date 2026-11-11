@@ -43,7 +43,7 @@
           </tr>
           <tr>
             <th scope="row">Qela Inc.</th>
-            <td>Platform vendor (White-label developer). Provides technical support, code updates, and debugging at the request of the <strong>SERHIY PRYTULA CHARITY FOUNDATION</strong>.</td>
+            <td>Platform vendor (White-label developer). Provides technical support, code updates, and debugging at the request of the <strong>SERHIY PRYTULA CHARITY FOUNDATION</strong></td>
             <td>Access to backend technical logs during troubleshooting (without the right to independent use or copying of databases).</td>
             <td>Access is governed by a Data Processing Agreement (DPA). Restricted access via secure IAM roles exclusively on the servers of the <strong>SERHIY PRYTULA CHARITY FOUNDATION</strong>.</td>
           </tr>
@@ -56,7 +56,7 @@
           <tr>
             <th scope="row">LiqPay (JSC CB PrivatBank)</th>
             <td>Payment gateway for one-time donations and monthly recurring subscriptions.</td>
-            <td>Phone number, email, donation amount, unique transaction ID. <strong>Important:</strong> payment card data is entered on the bank's secure page and is not collected by the <strong>SERHIY PRYTULA CHARITY FOUNDATION</strong>.</td>
+            <td>Phone number, email, donation amount, unique transaction ID. <strong>Important:</strong> payment card data is entered on the bank's secure page and is not collected by the <strong>SERHIY PRYTULA CHARITY FOUNDATION</strong></td>
             <td>Data centers in Ukraine/EU. Full compliance with the international Payment Card Industry Data Security Standard (PCI DSS).</td>
           </tr>
           <tr>

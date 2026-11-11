@@ -138,15 +138,14 @@ const features = [
 const marks = ["tl", "tr", "bl", "br"];
 
 // Документи — окремі сторінки, англійські версії під /en/… (зі сторінок
-// документа на них веде перемикач UA/EN). Умови використання англійською
-// поки лише PDF у public/ — оновленого тексту ще нема.
+// документа на них веде перемикач UA/EN).
 // Бейджі EN тимчасово приховані — щоб повернути, достатньо true
 const showEnglishDocs = false;
 const legalDocs = [
   {
     label: "Умови використання",
     to: "/terms-of-use",
-    hrefEn: "/terms-of-use-eng.pdf",
+    hrefEn: "/en/terms-of-use",
   },
   {
     label: "Політика конфіденційності",
@@ -328,7 +327,6 @@ const legalDocs = [
                 v-if="showEnglishDocs"
                 class="footer__lang"
                 :href="doc.hrefEn"
-                :target="doc.hrefEn.endsWith('.pdf') ? '_blank' : undefined"
                 rel="noopener"
                 hreflang="en"
                 :aria-label="`${doc.label} — English version`"
