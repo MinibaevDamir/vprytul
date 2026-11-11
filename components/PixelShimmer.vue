@@ -82,8 +82,8 @@ function loadArt(src: string) {
 // активність згасає за ~2 с, усі повертаються на місця — і далі арт нерухомий.
 // Розмір і положення блоку задає батьківський CSS — canvas малює арт
 // розтягнутим на блок (як img) або, з tile, у нативному масштабі з повтором
-// по горизонталі (як background repeat-x). Для prefers-reduced-motion —
-// одразу статичний кадр.
+// по горизонталі (як background repeat-x). Для prefers-reduced-motion і з
+// still — одразу статичний кадр.
 const props = withDefaults(
   defineProps<{
     src: string
@@ -94,8 +94,10 @@ const props = withDefaults(
     amount?: number
     /** повернути арт на 180° (як у макеті для однієї з «хмар») */
     flip?: boolean
+    /** без джитера — статичний арт */
+    still?: boolean
   }>(),
-  { tile: false, amount: 1, flip: false }
+  { tile: false, amount: 1, flip: false, still: false }
 )
 
 const rootEl = ref<HTMLElement | null>(null)
@@ -103,14 +105,44 @@ const canvasEl = ref<HTMLCanvasElement | null>(null)
 const ready = ref(false)
 
 const STRIDE = 4
-// джитер крокує дискретно, ~9 разів на секунду — як піксельна анімація
-const TICK_MS = 110
-// тривалість активної фази в кроках (~2 с), далі пікселі лише повертаються
-const BURST_TICKS = 18
-// імовірність за крок на піку: найрозсипанішому пікселю (4 порожні сусіди)
-// зрушити — далі пропорційно числу порожніх сусідів; зрушеному — повернутися
-const MOVE = 0.55
-const BACK = 0.45
+
+// Профілі джитера. calm — за замовчуванням: ~9 кроків на секунду, активність
+// згасає за ~2 с. hard — пробний «вжух-вжух і статика» (вмикається параметром
+// ?noise=hard в адресі): два короткі різкі сплески по ~0.4 с з частотою 25
+// кроків на секунду, у яких смикаються й пікселі щільного краю, і одразу стоп.
+// tick — крок, мс; ticks — тривалість активної фази в кроках, далі пікселі
+// лише повертаються; move — імовірність за крок на піку найрозсипанішому
+// пікселю (4 порожні сусіди) зрушити, далі пропорційно числу порожніх сусідів,
+// але не менше floor; back — імовірність зрушеному повернутися
+type Profile = {
+  tick: number
+  ticks: number
+  move: number
+  floor: number
+  back: number
+  energy: (t: number) => number
+}
+
+const PROFILES: Record<'calm' | 'hard', Profile> = {
+  calm: {
+    tick: 110,
+    ticks: 18,
+    move: 0.55,
+    floor: 0,
+    back: 0.45,
+    energy: (t) => Math.min(1, 1.6 * (1 - t)) ** 2
+  },
+  hard: {
+    tick: 40,
+    ticks: 26,
+    move: 1,
+    floor: 0.5,
+    back: 0.7,
+    energy: (t) => (t < 0.4 ? 1 : t < 0.6 ? 0 : 1)
+  }
+}
+
+let profile = PROFILES.calm
 // зсув на клітинку за напрямом стану: 0 — на місці, 1 — вгору, 2 — вниз,
 // 3 — вліво, 4 — вправо
 const DX = [0, 0, 0, -1, 1]
@@ -185,17 +217,18 @@ function prepare(a: Art) {
 // частіше), зсунуті здебільшого повертаються; активність згасає до нуля
 function tick() {
   if (!cells) return
-  const t = step / BURST_TICKS
-  const energy = t < 1 ? Math.min(1, 1.6 * (1 - t)) ** 2 : 0
+  const t = step / profile.ticks
+  const energy = t < 1 ? profile.energy(t) : 0
   for (const i of loose) {
     if (state[i]) {
-      if (energy === 0 || Math.random() < BACK) {
+      if (energy === 0 || Math.random() < profile.back) {
         state[i] = 0
         moved--
       }
       continue
     }
-    if (Math.random() >= (MOVE * props.amount * energy * cells[i * STRIDE + 2]) / 4) continue
+    const weight = Math.max(cells[i * STRIDE + 2] / 4, profile.floor)
+    if (Math.random() >= profile.move * props.amount * energy * weight) continue
     const mask = cells[i * STRIDE + 3]
     let options = 0
     for (let b = 0; b < 4; b++) if (mask & (1 << b)) options++
@@ -290,7 +323,7 @@ function inView() {
 }
 
 function loop(now: number) {
-  if (now - lastTick >= TICK_MS && (step > 0 || inView())) {
+  if (now - lastTick >= profile.tick && (step > 0 || inView())) {
     lastTick = now
     tick()
     draw()
@@ -312,7 +345,8 @@ async function show() {
 }
 
 onMounted(() => {
-  done = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  done = props.still || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (new URLSearchParams(location.search).get('noise') === 'hard') profile = PROFILES.hard
   io = new IntersectionObserver(
     ([entry]) => {
       visible = entry.isIntersecting

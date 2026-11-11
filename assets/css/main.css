@@ -106,6 +106,20 @@ a {
   }
 }
 
+/* Полотно під головною: iOS Safari заливає ним смугу під статус-баром і
+   overscroll, тож воно в колір верху hero — суцільний фон на десктопі, верх
+   піксельної «хмари» (#3d3d3d, cloud-1.svg) на мобільному. Інакше між статус-
+   баром і патерном видно лінію. Саму сторінку й далі фарбує body */
+html.is-landing {
+  background: var(--surface);
+}
+
+@media (max-width: 700px) {
+  html.is-landing {
+    background: #3d3d3d;
+  }
+}
+
 /* Сторінки документів світлі — щоб і overscroll не блимав темним */
 body.is-paper {
   background: var(--paper);

@@ -24,6 +24,8 @@ useSeoMeta({
 });
 
 useHead({
+  // фон полотна під сторінкою — колір верху hero, див. html.is-landing у main.css
+  htmlAttrs: { class: "is-landing" },
   link: [{ rel: "canonical", href: siteUrl }],
   script: [
     {
@@ -132,6 +134,9 @@ const features = [
   },
 ];
 
+// Кутові мітки рамки механіки: лівий/правий верхній, лівий/правий нижній
+const marks = ["tl", "tr", "bl", "br"];
+
 // Документи — окремі сторінки, англійські версії під /en/… (зі сторінок
 // документа на них веде перемикач UA/EN). Умови використання англійською
 // поки лише PDF у public/ — оновленого тексту ще нема.
@@ -223,6 +228,7 @@ const legalDocs = [
           <li
             v-for="f in features"
             :key="f.id"
+            v-reveal.mark
             class="feature"
             :class="`feature--${f.side}`"
             :style="{
@@ -233,10 +239,19 @@ const legalDocs = [
               '--ch': `${f.m.cloud.h}px`,
             }"
           >
+            <span
+              v-for="c in marks"
+              :key="c"
+              class="feature__mark"
+              :class="`feature__mark--${c}`"
+              aria-hidden="true"
+            />
+            <!-- «хмари» між блоками статичні: джитер лише вгорі й унизу сторінки -->
             <PixelShimmer
               class="feature__cloud"
               :src="f.m.cloud.src"
               :flip="f.m.cloud.r === 180"
+              still
             />
             <div v-reveal class="feature__copy">
               <h3 class="feature__title">{{ f.title }}</h3>
@@ -281,7 +296,7 @@ const legalDocs = [
             завантажуй застосунок<span class="cta__punct">!</span>
           </h2>
           <StoreButtons v-reveal="120" size="lg" class="cta__stores" />
-          <PixelShimmer class="cta__chevrons" src="/img/chevrons.svg" />
+          <PixelShimmer class="cta__chevrons" src="/img/chevrons.svg" still />
         </div>
       </section>
 
@@ -510,43 +525,67 @@ const legalDocs = [
   min-height: 570px;
 }
 
-/* Кутові мітки рамки: ассет із макета, кути в нативному розмірі, порожні
-   ребра тягнуться — сусідні рамки разом дають мітки «├ ┤» */
-.feature::before {
-  content: "";
+/* Кутові мітки рамки — кути ассета з макета в нативному розмірі. Кожна мітка
+   показує лівий верхній кут svg, решта — його дзеркала (scale), тож сусідні
+   рамки разом дають мітки «├ ┤», як у макеті */
+.feature__mark {
   position: absolute;
-  inset: -2px;
-  border: 25px solid transparent;
-  border-image: url("/img/frame-corners.svg") 25;
+  width: 23px;
+  height: 23px;
+  background: url("/img/frame-corners.svg") left top / auto no-repeat;
   pointer-events: none;
 }
 
-/* Мітки «наводяться», як рамка фокусу у видошукачі камери: коли ілюстрація
-   механіки потрапляє в кадр (v-reveal), мітки вилазять ззовні, проскакують
-   трохи всередину, фіксуються на місці й двічі блимають. Без v-reveal
+.feature__mark--tl {
+  left: -2px;
+  top: -2px;
+}
+
+.feature__mark--tr {
+  right: -2px;
+  top: -2px;
+  scale: -1 1;
+}
+
+.feature__mark--bl {
+  left: -2px;
+  bottom: -2px;
+  scale: 1 -1;
+}
+
+.feature__mark--br {
+  right: -2px;
+  bottom: -2px;
+  scale: -1;
+}
+
+/* Мітки «наводяться», як рамка фокусу у видошукачі камери: коли рамка
+   потрапляє в кадр (v-reveal.mark), мітки вилазять ззовні, проскакують трохи
+   всередину, фіксуються й двічі блимають. Зсув — transform у системі мітки:
+   для дзеркальних міток той самий translate веде у свій бік. Без v-reveal
    (prefers-reduced-motion) мітки просто стоять на місці */
-.feature:has(> .feature__art.reveal)::before {
+.feature.reveal-mark .feature__mark {
   opacity: 0;
 }
 
-.feature:has(> .feature__art.is-rev)::before {
+.feature.reveal-mark.is-rev .feature__mark {
   opacity: 1;
   animation: viewfinder 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes viewfinder {
   0% {
-    inset: -36px;
+    transform: translate(-34px, -34px);
     opacity: 0;
   }
   12% {
     opacity: 1;
   }
   42% {
-    inset: 6px;
+    transform: translate(8px, 8px);
   }
   58% {
-    inset: -2px;
+    transform: none;
     opacity: 1;
   }
   68% {
@@ -560,7 +599,7 @@ const legalDocs = [
   }
   92%,
   100% {
-    inset: -2px;
+    transform: none;
     opacity: 1;
   }
 }
@@ -867,7 +906,7 @@ const legalDocs = [
     flex-direction: column;
     gap: 0;
     max-width: calc(480px + 80px);
-    padding: 75px 40px 0;
+    padding: 60px 40px 0;
     --phone-w: calc(var(--col) * 0.7278);
   }
 
