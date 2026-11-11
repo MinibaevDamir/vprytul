@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Мокап iPhone 16 Light з «Домашньою сторінкою» застосунку (Figma 699:1802).
+// Мокап iPhone 16 Light з «Домашньою сторінкою» застосунку (Figma 805:2423).
 // Усі розміри задані в одиницях макета: --u = 1/372 ширини телефона, тож мокап
 // масштабується від ширини контейнера. Стрічка екрана довша за вьюпорт телефона
 // і скрабиться 1:1 зі скролом сторінки. Якщо є предок [data-phone-pin] (hero
@@ -48,17 +48,6 @@ onBeforeUnmount(() => {
   ro?.disconnect()
   window.removeEventListener('scroll', onScroll)
 })
-
-// Розміри svg — з експорту Figma (іконки з полями під тінь). Саму тінь
-// (розмиття ~11px у тісній області фільтра) прибрано: iOS Safari обрізав її
-// по краю області, і довкола іконок проступали бліді кола
-const tabs = [
-  { id: 'home', label: 'Головна', w: 56.1245, h: 56.6263 },
-  { id: 'quests', label: 'Квести', w: 58.8622, h: 58.1778 },
-  { id: 'donate', label: 'Донат', w: 56.1244, h: 55.44 },
-  { id: 'ratings', label: 'Рейтинги', w: 58.8622, h: 56.1244 },
-  { id: 'profile', label: 'Профіль', w: 10.9511, h: 14.3733 }
-]
 </script>
 
 <template>
@@ -87,16 +76,19 @@ const tabs = [
           <div ref="feedEl" class="phone__feed" :style="{ transform: `translateY(${shift}px)` }">
             <img class="phone__shot" src="/phone/screen-home.png" width="957" height="4096" alt="" />
           </div>
-        </div>
 
-        <!-- Нижня панель застосунку — лише в мобільному макеті (660:2284) -->
-        <div class="phone__tabbar">
-          <span v-for="t in tabs" :key="t.id" class="phone__tab" :class="`phone__tab--${t.id}`">
-            <span class="phone__tab-icon">
-              <img :src="`/phone/tab-${t.id}.svg`" :width="t.w" :height="t.h" alt="" />
-            </span>
-            {{ t.label }}
-          </span>
+          <!-- Хедер і нижня панель застосунку закріплені (Figma 805:2423): це ті
+               самі ділянки скріншота на початку й у кінці стрічки, поверх неї -->
+          <div class="phone__pin phone__pin--head">
+            <div class="phone__feed">
+              <img class="phone__shot" src="/phone/screen-home.png" width="957" height="4096" alt="" />
+            </div>
+          </div>
+          <div class="phone__pin phone__pin--tabs">
+            <div class="phone__feed">
+              <img class="phone__shot" src="/phone/screen-home.png" width="957" height="4096" alt="" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -314,99 +306,38 @@ const tabs = [
   max-width: none;
 }
 
-/* ---------- Нижня панель (мобільний макет, розміри ÷ 0.63 до одиниць 372px) ---------- */
-.phone__tabbar {
-  display: none;
+/* ---------- Закріплені хедер і нижня панель ----------
+   Вікна поверх стрічки з тим самим скріншотом у положенні на старті (хедер)
+   і в кінці прокрутки (панель), тож стрічка ховається під ними. Межі — з PNG:
+   хедер із лінією під ним — рядки 0–255, панель — від лінії на рядку 3863;
+   у одиницях стрічки (4096px = 1491.99u, верх PNG на −28.575u) це 64.68u
+   від верху і 71.93u від низу */
+.phone__pin {
   position: absolute;
-  left: calc(-0.73 * var(--u));
-  top: calc(668.71 * var(--u));
-  width: calc(349.2 * var(--u));
-  /* місце під смужку «додому», яку малює .phone__home */
-  padding-bottom: calc(31.66 * var(--u));
-  border-top: calc(0.93 * var(--u)) solid #e3e4de;
-  background: #fff;
-  align-items: center;
+  left: 0;
+  right: 0;
+  overflow: hidden;
 }
 
-@media (max-width: 700px) {
-  .phone__tabbar {
-    display: flex;
-  }
+.phone__pin--head {
+  top: 0;
+  height: calc(64.68 * var(--u));
 }
 
-.phone__tab {
-  flex: 1 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(39.11 * var(--u));
-  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: calc(10.24 * var(--u));
-  line-height: 1.3;
-  color: #000;
+.phone__pin--tabs {
+  bottom: 0;
+  height: calc(71.93 * var(--u));
 }
 
-.phone__tab--home {
-  color: #ff9200;
+.phone__pin .phone__feed {
+  will-change: auto;
 }
 
-.phone__tab--donate {
-  flex: none;
-  width: calc(52.15 * var(--u));
-  height: calc(52.15 * var(--u));
-  border-radius: 50%;
-  background: #000;
-  color: #fff;
-}
-
-.phone__tab-icon {
-  position: relative;
-  width: calc(26.07 * var(--u));
-  height: calc(26.07 * var(--u));
-}
-
-/* svg-іконки ширші за бокс на поле під тінь — відступи з макета, перераховані
-   в left/top/width/height (для img inset без розмірів не розтягує) */
-.phone__tab-icon img {
+.phone__pin--tabs .phone__feed {
   position: absolute;
-  max-width: none;
-}
-
-.phone__tab--home img {
-  left: -120.83%;
-  top: -123.89%;
-  width: 341.66%;
-  height: 344.72%;
-}
-
-.phone__tab--quests img {
-  left: -130.47%;
-  top: -129.17%;
-  width: 358.34%;
-  height: 354.17%;
-}
-
-.phone__tab--donate img {
-  left: -122.13%;
-  top: -116.67%;
-  width: 341.66%;
-  height: 337.5%;
-}
-
-.phone__tab--ratings img {
-  left: -129.15%;
-  top: -120.82%;
-  width: 358.34%;
-  height: 341.67%;
-}
-
-.phone__tab--profile img {
-  left: 16.67%;
-  top: 4.17%;
-  width: 66.66%;
-  height: 87.5%;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* ---------- Статус-бар і жести ---------- */
