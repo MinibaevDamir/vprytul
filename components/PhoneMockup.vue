@@ -49,7 +49,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
 })
 
-// Розміри svg — з експорту Figma (іконки з полями під тінь)
+// Розміри svg — з експорту Figma (іконки з полями під тінь). Саму тінь
+// (розмиття ~11px у тісній області фільтра) прибрано: iOS Safari обрізав її
+// по краю області, і довкола іконок проступали бліді кола
 const tabs = [
   { id: 'home', label: 'Головна', w: 56.1245, h: 56.6263 },
   { id: 'quests', label: 'Квести', w: 58.8622, h: 58.1778 },
@@ -110,16 +112,17 @@ const tabs = [
 .phone {
   container-type: inline-size;
   width: 100%;
-  aspect-ratio: 372 / 774.589;
   user-select: none;
 }
 
-/* Одиниця макета: ширина телефона в Figma — 372px */
+/* Одиниця макета: ширина телефона в Figma — 372px. Висота корпусу — теж в
+   одиницях, а не aspect-ratio на .phone: iOS Safari у flex-колонці мобільного
+   hero робив блок вищим, і рамка виходила з-під екрана товстим «підборіддям» */
 .phone__body {
   --u: calc(100cqw / 372);
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(774.589 * var(--u));
   filter: drop-shadow(0 calc(6.349 * var(--u)) calc(3.175 * var(--u)) rgba(0, 0, 0, 0.25));
 }
 
@@ -397,10 +400,6 @@ const tabs = [
   top: -120.82%;
   width: 358.34%;
   height: 341.67%;
-}
-
-.phone__tab--profile .phone__tab-icon {
-  filter: drop-shadow(0 0 calc(17.38 * var(--u)) rgba(108, 117, 125, 0.15));
 }
 
 .phone__tab--profile img {

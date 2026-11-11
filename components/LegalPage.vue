@@ -2,10 +2,35 @@
 // Сторінка документа (Figma 719:2158 — десктоп, 660:2907 — мобільний).
 // Текст документа передається в слот: h2 — розділи, p — пункти,
 // p.sub — підпункти, ul — переліки, table — таблиці.
-const props = defineProps<{ title: string; description: string; path: string }>()
+// lang — мова документа (англійські версії живуть під /en/…), alt — шлях до
+// версії іншою мовою: з нього в шапці робиться перемикач UA/EN.
+const props = withDefaults(
+  defineProps<{ title: string; description: string; path: string; lang?: 'uk' | 'en'; alt?: string }>(),
+  { lang: 'uk', alt: undefined }
+)
 
 const { siteUrl } = useRuntimeConfig().public
-const pageTitle = `${props.title} — Впритул`
+
+const ui = {
+  uk: {
+    brand: 'Впритул',
+    home: '← На головну',
+    homeLabel: 'Впритул — на головну',
+    meta: 'Документ застосунку «Впритул» Благодійного фонду Сергія Притули',
+    locale: 'uk_UA',
+    other: { lang: 'en', label: 'EN', title: 'English version' }
+  },
+  en: {
+    brand: 'VPRYTUL',
+    home: '← Home',
+    homeLabel: 'VPRYTUL — home',
+    meta: 'A document of the VPRYTUL app by the Serhiy Prytula Charity Foundation',
+    locale: 'en_US',
+    other: { lang: 'uk', label: 'UA', title: 'Українська версія' }
+  }
+}[props.lang]
+
+const pageTitle = `${props.title} — ${ui.brand}`
 
 useSeoMeta({
   title: pageTitle,
@@ -14,11 +39,20 @@ useSeoMeta({
   ogDescription: props.description,
   ogType: 'article',
   ogUrl: `${siteUrl}${props.path}`,
-  ogLocale: 'uk_UA'
+  ogLocale: ui.locale
 })
 
 useHead({
-  link: [{ rel: 'canonical', href: `${siteUrl}${props.path}` }],
+  htmlAttrs: { lang: props.lang },
+  link: [
+    { rel: 'canonical', href: `${siteUrl}${props.path}` },
+    ...(props.alt
+      ? [
+          { rel: 'alternate', hreflang: props.lang, href: `${siteUrl}${props.path}` },
+          { rel: 'alternate', hreflang: ui.other.lang, href: `${siteUrl}${props.alt}` }
+        ]
+      : [])
+  ],
   bodyAttrs: { class: 'is-paper' }
 })
 </script>
@@ -26,15 +60,27 @@ useHead({
 <template>
   <div class="legal">
     <header class="legal__bar">
-      <NuxtLink to="/" class="legal__logo" aria-label="Впритул — на головну">
+      <NuxtLink to="/" class="legal__logo" :aria-label="ui.homeLabel">
         <img src="/img/logo-mark.svg" width="104" height="45" alt="" />
       </NuxtLink>
-      <NuxtLink to="/" class="legal__back">← На головну</NuxtLink>
+      <nav class="legal__nav">
+        <NuxtLink
+          v-if="alt"
+          :to="alt"
+          class="legal__lang"
+          :hreflang="ui.other.lang"
+          :lang="ui.other.lang"
+          :title="ui.other.title"
+          :aria-label="ui.other.title"
+          >{{ ui.other.label }}</NuxtLink
+        >
+        <NuxtLink to="/" class="legal__back">{{ ui.home }}</NuxtLink>
+      </nav>
     </header>
 
     <main class="legal__main">
       <h1 class="legal__title">{{ title }}</h1>
-      <p class="legal__meta">Документ застосунку «Впритул» Благодійного фонду Сергія Притули</p>
+      <p class="legal__meta">{{ ui.meta }}</p>
       <div class="legal__body">
         <slot />
       </div>
@@ -67,6 +113,12 @@ useHead({
   height: 45px;
 }
 
+.legal__nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .legal__back {
   font-size: 16px;
   line-height: normal;
@@ -75,8 +127,26 @@ useHead({
   transition: color 0.15s ease;
 }
 
-.legal__back:hover {
+.legal__back:hover,
+.legal__lang:hover {
   color: var(--orange);
+}
+
+/* Перемикач мови — як бейдж EN у футері головної */
+.legal__lang {
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--mist);
+  text-decoration: none;
+  border: 1px solid rgba(203, 204, 198, 0.4);
+  border-radius: 4px;
+  padding: 5px 7px 4px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.legal__lang:hover {
+  border-color: var(--orange);
 }
 
 /* ---------- Документ: колонка 1040px ---------- */

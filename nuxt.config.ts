@@ -10,6 +10,7 @@ export default defineNuxtConfig({
       fbPixelId: '', // NUXT_PUBLIC_FB_PIXEL_ID
       appStoreUrl: '', // NUXT_PUBLIC_APP_STORE_URL — пряме посилання після рев'ю
       playStoreUrl: '', // NUXT_PUBLIC_PLAY_STORE_URL
+      guideUrl: 'https://user.vprytul.app/help', // користувацький гід (мануал від розробника)
       siteUrl: 'https://vprytul.prytulafoundation.org'
     }
   },
@@ -30,9 +31,12 @@ export default defineNuxtConfig({
   // як статичні асети з коректним кешуванням, див. https://vercel.com/docs/frameworks/full-stack/nuxt
   routeRules: {
     '/': { prerender: true },
-    '/user-guide': { prerender: true },
+    // стара адреса гіда — гід тепер на сайті застосунку
+    '/user-guide': { redirect: { to: 'https://user.vprytul.app/help', statusCode: 301 } },
     '/privacy-policy': { prerender: true },
     '/terms-of-use': { prerender: true },
-    '/data-protection-policy': { prerender: true }
+    '/data-protection-policy': { prerender: true },
+    '/en/privacy-policy': { prerender: true },
+    '/en/data-protection-policy': { prerender: true }
   }
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { siteUrl } = useRuntimeConfig().public;
+const { siteUrl, guideUrl } = useRuntimeConfig().public;
 const { trackGuideOpen } = useAnalytics();
 
 const title = "Впритул — застосунок Благодійного фонду Сергія Притули";
@@ -132,30 +132,28 @@ const features = [
   },
 ];
 
-// Українські версії — окремі сторінки, англійські — PDF у public/
+// Документи — окремі сторінки, англійські версії під /en/… (зі сторінок
+// документа на них веде перемикач UA/EN). Умови використання англійською
+// поки лише PDF у public/ — оновленого тексту ще нема.
 // Бейджі EN тимчасово приховані — щоб повернути, достатньо true
 const showEnglishDocs = false;
 const legalDocs = [
   {
     label: "Умови використання",
     to: "/terms-of-use",
-    fileEn: "terms-of-use-eng.pdf",
+    hrefEn: "/terms-of-use-eng.pdf",
   },
   {
     label: "Політика конфіденційності",
     to: "/privacy-policy",
-    fileEn: "privacy-policy-eng.pdf",
+    hrefEn: "/en/privacy-policy",
   },
   {
     label: "Політика захисту даних",
     to: "/data-protection-policy",
-    fileEn: "data-protection-policy-eng.pdf",
+    hrefEn: "/en/data-protection-policy",
   },
-].map((d) => ({
-  label: d.label,
-  to: d.to,
-  hrefEn: `/${encodeURI(d.fileEn)}`,
-}));
+];
 </script>
 
 
@@ -299,11 +297,13 @@ const legalDocs = [
           </p>
 
           <nav class="footer__links" aria-label="Документи">
-            <NuxtLink
+            <a
               class="footer__link"
-              to="/user-guide"
+              :href="guideUrl"
+              target="_blank"
+              rel="noopener"
               @click="trackGuideOpen()"
-              >Користувацький гід</NuxtLink
+              >Користувацький гід</a
             >
             <span v-for="doc in legalDocs" :key="doc.label" class="footer__doc">
               <NuxtLink class="footer__link" :to="doc.to">{{
@@ -313,7 +313,7 @@ const legalDocs = [
                 v-if="showEnglishDocs"
                 class="footer__lang"
                 :href="doc.hrefEn"
-                target="_blank"
+                :target="doc.hrefEn.endsWith('.pdf') ? '_blank' : undefined"
                 rel="noopener"
                 hreflang="en"
                 :aria-label="`${doc.label} — English version`"
@@ -519,6 +519,50 @@ const legalDocs = [
   border: 25px solid transparent;
   border-image: url("/img/frame-corners.svg") 25;
   pointer-events: none;
+}
+
+/* Мітки «наводяться», як рамка фокусу у видошукачі камери: коли ілюстрація
+   механіки потрапляє в кадр (v-reveal), мітки вилазять ззовні, проскакують
+   трохи всередину, фіксуються на місці й двічі блимають. Без v-reveal
+   (prefers-reduced-motion) мітки просто стоять на місці */
+.feature:has(> .feature__art.reveal)::before {
+  opacity: 0;
+}
+
+.feature:has(> .feature__art.is-rev)::before {
+  opacity: 1;
+  animation: viewfinder 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes viewfinder {
+  0% {
+    inset: -36px;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  42% {
+    inset: 6px;
+  }
+  58% {
+    inset: -2px;
+    opacity: 1;
+  }
+  68% {
+    opacity: 0.15;
+  }
+  76% {
+    opacity: 1;
+  }
+  84% {
+    opacity: 0.15;
+  }
+  92%,
+  100% {
+    inset: -2px;
+    opacity: 1;
+  }
 }
 
 .feature__copy {
@@ -962,26 +1006,37 @@ const legalDocs = [
     z-index: -1;
   }
 
+  /* Заклик збільшено відносно макета (там 20px): найдовший рядок
+     «завантажуй застосунок» (~13.2em, з запасом 13.4em) — на всю ширину
+     контейнера, рядки не переносяться */
   .cta__title {
-    font-size: 20px;
+    font-size: calc(min(100vw - 48px, 552px) / 13.4);
     line-height: 1;
+    white-space: nowrap;
   }
 
   .cta__punct {
     display: none;
   }
 
+  /* кнопки — як у hero: дві на всю ширину текстової колонки */
   .cta__inner .cta__stores {
     flex-wrap: nowrap;
-    margin-top: 7.7px;
-    gap: 23.55px;
-    font-size: 45.05px;
+    margin-top: 14px;
+    gap: 7.56px;
+    font-size: calc((var(--col) - 7.56px) / 5.36);
     --stores-bg: var(--mist);
   }
 
+  /* Шеврони в межах екрана, по ширині кнопок (у макеті 432px — на телефоні
+     крайні обрізалися краями екрана). Арт — сітка 157×64 клітинки, тож
+     314×128 дає рівно 2px на клітинку: пікселі однакові на будь-якому dpr.
+     Висота явна, без aspect-ratio — iOS Safari у flex-колонці рахує його неточно */
   .cta__chevrons {
-    width: 432px;
+    width: 314px;
+    height: 128px;
     max-width: none;
+    aspect-ratio: auto;
     margin-top: 18.4px;
   }
 
