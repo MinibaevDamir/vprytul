@@ -21,6 +21,11 @@ useSeoMeta({
   twitterTitle: title,
   twitterDescription: description,
   twitterImage: `${siteUrl}/og.png`,
+  // iOS до 26 тонує смугу статус-бару за theme-color — у колір верху hero
+  themeColor: [
+    { content: "#3d3d3d", media: "(max-width: 700px)" },
+    { content: "#323232", media: "(min-width: 701px)" },
+  ],
 });
 
 useHead({
@@ -368,6 +373,8 @@ const legalDocs = [
 /* Піксельні «хмари» фону виходять за краї екрана */
 .page {
   overflow-x: clip;
+  /* body на головній — у колір верху hero, див. html.is-landing у main.css */
+  background: var(--bg);
 }
 
 /* ---------- Hero ---------- */
