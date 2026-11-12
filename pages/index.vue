@@ -212,7 +212,11 @@ const legalDocs = [
             </p>
           </div>
 
-          <PhoneMockup class="hero__phone" @range="phoneScroll = $event" />
+          <!-- обгортка — слот телефона: на мобільному він займає висоту,
+               що лишилась у першому екрані -->
+          <div class="hero__phone">
+            <PhoneMockup class="hero__device" @range="phoneScroll = $event" />
+          </div>
         </div>
       </div>
       <div class="hero__spacer" aria-hidden="true" />
@@ -899,30 +903,20 @@ const legalDocs = [
   }
 
   /* Порядок як у макеті: логотип, слоган, телефон, кнопки, тексти.
-     Перший екран — рівно логотип, телефон і кнопки: кнопки завжди видно, а
-     тексти починаються за його нижнім краєм, як окрема проміжна секція.
-     Висота — svh, з розгорнутими панелями браузера, як при відкритті
-     сторінки: vh в iOS рахує без панелей (кнопки ховались під ними), а dvh
-     змінюється під час скролу і смикав би мокап.
-     На низьких екранах зменшуються верхній відступ і телефон: --rest — усе,
-     крім телефона, від верху до низу кнопок (логотип 0.115, слоган 0.153 і
-     кнопки 0.151 ширини колонки, відступи 10.7 + 15.5) плюс --below під
-     кнопками; телефон — не вужчий за половину колонки */
+     Перший екран — логотип, телефон, кнопки і перший абзац з однаковими
+     відступами --gap між усім (і від країв екрана); другий абзац — уже за
+     краєм. Висота — svh, з розгорнутими панелями браузера, як при відкритті
+     сторінки: vh в iOS рахує без панелей (низ ховався під ними), а dvh
+     змінюється під час скролу і смикав би мокап. */
   .hero__inner {
     --screen: 100vh;
-    --top: clamp(32px, var(--screen) * 0.084, 60px);
-    --below: 24px;
-    --rest: calc(var(--top) + var(--col) * 0.42 + 26px + var(--below));
+    --gap: clamp(10px, var(--screen) * 0.024, 20px);
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
     justify-items: stretch;
     gap: 0;
     max-width: calc(480px + 80px);
-    padding: var(--top) 40px 0;
-    --phone-w: clamp(
-      var(--col) * 0.5,
-      (var(--screen) - var(--rest)) / 2.0822,
-      var(--col) * 0.7278
-    );
+    padding: var(--gap) 40px 0;
   }
 
   @supports (height: 100svh) {
@@ -931,12 +925,12 @@ const legalDocs = [
     }
   }
 
-  /* Розтягує перші три ряди на екран; надлишок на високих екранах ділиться
-     між ними порівну: над логотипом, навколо телефона і під кнопками */
+  /* Задає першим чотирьом рядам висоту екрана; гнучкий ряд телефона
+     забирає все, що лишилось після логотипа, кнопок і абзацу */
   .hero__inner::before {
     content: "";
-    grid-area: 1 / 1 / 4;
-    min-height: calc(var(--screen) - var(--top) - var(--below));
+    grid-area: 1 / 1 / 5;
+    height: calc(var(--screen) - 2 * var(--gap));
     pointer-events: none;
   }
 
@@ -946,7 +940,6 @@ const legalDocs = [
 
   .hero__title {
     grid-area: 1 / 1;
-    align-self: end;
   }
 
   .hero__slogan {
@@ -955,17 +948,31 @@ const legalDocs = [
     color: var(--mist);
   }
 
+  /* Слот телефона: висота — від ряду, телефон вписаний у неї (372 × 774.589).
+     Межі — 0.4…0.9 ширини колонки (у макеті 0.7278): на високих екранах
+     телефон росте, щоб відступи лишались однаковими, а на дуже низьких
+     абзац іде за край */
   .hero__phone {
     grid-area: 2 / 1;
-    align-self: center;
-    margin-top: 10.7px;
+    align-self: stretch;
+    width: auto;
+    min-height: calc(var(--col) * 0.4 * 774.589 / 372);
+    margin-top: var(--gap);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    container-type: size;
+  }
+
+  .hero__device {
+    flex: none;
+    width: min(100cqh * 372 / 774.589, var(--col) * 0.9);
   }
 
   .hero__inner .hero__stores {
     grid-area: 3 / 1;
-    align-self: start;
     flex-wrap: nowrap;
-    margin-top: 15.5px;
+    margin-top: var(--gap);
     gap: 7.56px;
     /* дві кнопки на всю ширину колонки */
     font-size: calc((var(--col) - 7.56px) / 5.36);
@@ -978,10 +985,9 @@ const legalDocs = [
     color: var(--mist);
   }
 
-  /* --below + 16px: перший рядок тексту — нижче краю екрана */
   .hero__lead {
     grid-area: 4 / 1;
-    margin-top: calc(var(--below) + 16px);
+    margin-top: var(--gap);
   }
 
   .hero__text {
