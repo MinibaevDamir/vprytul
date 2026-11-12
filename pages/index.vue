@@ -898,18 +898,55 @@ const legalDocs = [
     z-index: -1;
   }
 
-  /* Порядок як у макеті: логотип, слоган, телефон, кнопки, тексти */
+  /* Порядок як у макеті: логотип, слоган, телефон, кнопки, тексти.
+     Перший екран — рівно логотип, телефон і кнопки: кнопки завжди видно, а
+     тексти починаються за його нижнім краєм, як окрема проміжна секція.
+     Висота — svh, з розгорнутими панелями браузера, як при відкритті
+     сторінки: vh в iOS рахує без панелей (кнопки ховались під ними), а dvh
+     змінюється під час скролу і смикав би мокап.
+     На низьких екранах зменшуються верхній відступ і телефон: --rest — усе,
+     крім телефона, від верху до низу кнопок (логотип 0.115, слоган 0.153 і
+     кнопки 0.151 ширини колонки, відступи 10.7 + 15.5) плюс --below під
+     кнопками; телефон — не вужчий за половину колонки */
   .hero__inner {
-    display: flex;
-    flex-direction: column;
+    --screen: 100vh;
+    --top: clamp(32px, var(--screen) * 0.084, 60px);
+    --below: 24px;
+    --rest: calc(var(--top) + var(--col) * 0.42 + 26px + var(--below));
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
     gap: 0;
     max-width: calc(480px + 80px);
-    padding: 60px 40px 0;
-    --phone-w: calc(var(--col) * 0.7278);
+    padding: var(--top) 40px 0;
+    --phone-w: clamp(
+      var(--col) * 0.5,
+      (var(--screen) - var(--rest)) / 2.0822,
+      var(--col) * 0.7278
+    );
+  }
+
+  @supports (height: 100svh) {
+    .hero__inner {
+      --screen: 100svh;
+    }
+  }
+
+  /* Розтягує перші три ряди на екран; надлишок на високих екранах ділиться
+     між ними порівну: над логотипом, навколо телефона і під кнопками */
+  .hero__inner::before {
+    content: "";
+    grid-area: 1 / 1 / 4;
+    min-height: calc(var(--screen) - var(--top) - var(--below));
+    pointer-events: none;
   }
 
   .hero__copy {
     display: contents;
+  }
+
+  .hero__title {
+    grid-area: 1 / 1;
+    align-self: end;
   }
 
   .hero__slogan {
@@ -919,13 +956,14 @@ const legalDocs = [
   }
 
   .hero__phone {
-    order: 1;
+    grid-area: 2 / 1;
     align-self: center;
     margin-top: 10.7px;
   }
 
   .hero__inner .hero__stores {
-    order: 2;
+    grid-area: 3 / 1;
+    align-self: start;
     flex-wrap: nowrap;
     margin-top: 15.5px;
     gap: 7.56px;
@@ -936,16 +974,18 @@ const legalDocs = [
 
   .hero__lead,
   .hero__text {
-    order: 3;
     margin-right: -7px;
     color: var(--mist);
   }
 
+  /* --below + 16px: перший рядок тексту — нижче краю екрана */
   .hero__lead {
-    margin-top: 14.8px;
+    grid-area: 4 / 1;
+    margin-top: calc(var(--below) + 16px);
   }
 
   .hero__text {
+    grid-area: 5 / 1;
     margin-top: 92px;
     margin-left: 0;
   }
