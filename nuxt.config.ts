@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       appStoreUrl: '', // NUXT_PUBLIC_APP_STORE_URL — пряме посилання після рев'ю
       playStoreUrl: '', // NUXT_PUBLIC_PLAY_STORE_URL
       guideUrl: 'https://user.vprytul.app/help', // користувацький гід (мануал від розробника)
-      siteUrl: 'https://vprytul.prytulafoundation.org'
+      siteUrl: 'https://www.vprytul.app'
     }
   },
 
